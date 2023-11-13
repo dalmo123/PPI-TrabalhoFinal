@@ -58,10 +58,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION["usuario"])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <!-- Estilos CSS personalizados -->
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/solicitarPostagem.css">
-    <link rel="stylesheet" href="../css/offCanvas.css">
-    <link rel="icon" type="image/x-icon" href="../imagens/brand.png">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/solicitarPostagem.css">
+    <link rel="stylesheet" href="../../css/offCanvas.css">
+    <link rel="icon" type="image/x-icon" href="../../imagens/brand.png">
 
 </head>
 <header>
@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION["usuario"])) {
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
                     </a>
                 </div>
             </div>
@@ -104,17 +104,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION["usuario"])) {
     <aside>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-                <img src="../imagens/user.png" class="rounded-circle" width="50" height="50">
+                <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel">Nome do Usuário</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
             <div class="offcanvas-body">
                 <ul>
-                    <li><a href="solicitar_postagem.html">Solicitar Postagem</a></li>
-                    <li><a href="gerenciar_postagens.html">Gerenciar Postagens</a</li>
-                    <li><a href="editar_perfil.html">Editar perfil</a></li>
-                    <li><a href="excluir_perfil.html">Excluir Perfil</a></li>
+                    <li><a href="solicitar_postagem.php">Solicitar Postagem</a></li>
+                    <li><a href="gerenciar_postagens.php">Gerenciar Postagens</a</li>
+                    <li><a href="editar_perfil.php">Editar perfil</a></li>
+                    <li><a href="excluir_perfil.php">Excluir Perfil</a></li>
                     <li class="separator">
                         <button type="button" class="btn btn-outline-primary w-100 mt-3" data-bs-toggle="modal"
                             data-bs-target="#confirmExitModal">Sair

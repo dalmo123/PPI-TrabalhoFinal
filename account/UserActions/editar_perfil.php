@@ -1,5 +1,73 @@
+<?php
+require_once "../UsuarioEntidade.php";
+session_start();
+
+if (isset($_POST["logout"])) {
+    // Destrói a sessão
+    session_destroy();
+
+    // Redireciona para a página de login
+    header("Location: ../../login.php");
+    exit();
+}
+
+if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
+    header("Location: ../../login.php");
+} else {
+    $usuario = $_SESSION["usuario"];
+    // Consulta o ID do usuário no banco de dados
+    require_once "../conexao.php";
+    $conn = new Conexao();
+    $sql = "SELECT id, tipo_conta FROM usuarios WHERE email = ? AND nome = ?";
+    $stmt = $conn->conexao->prepare($sql);
+    $stmt->bindParam(1, $usuario->getEmail());
+    $stmt->bindParam(2, $usuario->getNome());
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Define o ID do usuário na variável de sessão
+    $usuario->setId($result['id']);
+
+    // Obtém o tipo de conta
+    $tipoConta = $result['tipo_conta'];
+}
+
+// Processamento do formulário quando enviado
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Recupera os dados do formulário
+    $nome = !empty($_POST["name"]) ? $_POST["name"] : null;
+    $email = !empty($_POST["email"]) ? $_POST["email"] : null;
+    $telefone = !empty($_POST["tel"]) ? $_POST["tel"] : null;
+
+    // Atualiza a foto de perfil, se fornecida
+    if (isset($_FILES["profilePicture"]) && $_FILES["profilePicture"]["error"] == 0) {
+        $foto_perfil_nome = $_FILES["profilePicture"]["name"];
+        $foto_perfil_tipo = $_FILES["profilePicture"]["type"];
+        $foto_perfil_dados = file_get_contents($_FILES["profilePicture"]["tmp_name"]);
+    } else {
+        // Se não fornecida, mantenha os dados atuais no banco
+        $foto_perfil_nome = null;
+        $foto_perfil_tipo = null;
+        $foto_perfil_dados = null;
+    }
+
+    // Atualiza os dados no banco apenas se não estiverem em branco
+    $sql = "UPDATE usuarios SET nome = COALESCE(?, nome), email = COALESCE(?, email), telefone = COALESCE(?, telefone), foto_perfil_nome = COALESCE(?, foto_perfil_nome), foto_perfil_tipo = COALESCE(?, foto_perfil_tipo), foto_perfil_dados = COALESCE(?, foto_perfil_dados) WHERE id = ?";
+    $stmt = $conn->conexao->prepare($sql);
+    $stmt->bindParam(1, $nome);
+    $stmt->bindParam(2, $email);
+    $stmt->bindParam(3, $telefone);
+    $stmt->bindParam(4, $foto_perfil_nome);
+    $stmt->bindParam(5, $foto_perfil_tipo);
+    $stmt->bindParam(6, $foto_perfil_dados);
+    $stmt->bindParam(7, $usuario->getId());
+    $stmt->execute();
+}
+?>
+
 <!DOCTYPE html>
 <html>
+
 
 <head>
     <title>SALVAR | Editar Perfil</title>
@@ -7,35 +75,40 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <!-- Estilos CSS personalizados -->
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/login.css">
-    <link rel="stylesheet" href="../css/offCanvas.css">
-    <link rel="icon" type="image/x-icon" href="../imagens/brand.png">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/login.css">
+    <link rel="stylesheet" href="../../css/offCanvas.css">
+    <link rel="icon" type="image/x-icon" href="../../imagens/brand.png">
 
 </head>
 <header>
     <!-- Barra de Navegação -->
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index_usuario.html"><img src="../imagens/Logo_transp.png" class="img-fluid" width="200" title="Logo Sistema Salvar" alt=""></a>
+            <!-- Logo à direita -->
+            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png" class="img-fluid"
+                    width="200"></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item text-center">
-                        <a class="nav-link" href="index_usuario.html">Home</a>
+                        <a class="nav-link" href="../index_account.php">Home</a>
                     </li>
                     <li class="nav-item text-center">
-                        <a class="nav-link" href="sobre_usuario.html">Sobre</a>
+                        <a class="nav-link" href="../sobre.php">Sobre</a>
                     </li>
                     <li class="nav-item text-center">
-                        <a class="nav-link" href="lista_itens_usuario.html">Lista de Usuários</a>
+                        <a class="nav-link" href="../lista_itens.php">Lista de Usuários</a>
+                    </li>
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="../cadastro_usuario.php">Cadastro</a>
                     </li>
                 </ul>
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
                     </a>
                 </div>
             </div>
@@ -52,17 +125,17 @@
     <aside>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-                <img src="../imagens/user.png" class="rounded-circle" width="50" height="50">
+                <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel">Nome do Usuário</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
             <div class="offcanvas-body">
                 <ul>
-                    <li><a href="solicitar_postagem.html">Solicitar Postagem</a></li>
-                    <li><a href="gerenciar_postagens.html">Gerenciar Postagens</a</li>
-                    <li><a href="editar_perfil.html">Editar perfil</a></li>
-                    <li><a href="excluir_perfil.html">Excluir Perfil</a></li>
+                     <li><a href="solicitar_postagem.php">Solicitar Postagem</a></li>
+                    <li><a href="gerenciar_postagens.php">Gerenciar Postagens</a</li>
+                    <li><a href="editar_perfil.php">Editar perfil</a></li>
+                    <li><a href="excluir_perfil.php">Excluir Perfil</a></li>
                     <li class="separator">
                         <button type="button" class="btn btn-outline-primary w-100 mt-3" data-bs-toggle="modal"
                             data-bs-target="#confirmExitModal">Sair
