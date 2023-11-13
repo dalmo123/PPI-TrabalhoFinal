@@ -1,0 +1,103 @@
+* {
+    margin: 0%;
+    padding: 0%;
+}
+
+body, html {
+    font-family: Arial, Helvetica, sans-serif;
+    height: 100%;
+}
+
+.navbar-custom {
+    background-color: #429dff;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.adjust{
+    margin-left: 4%;
+}
+
+.ip-group{
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.separator {
+    border-top: 1px solid #bebebe; /* Cor e espessura da linha */
+    margin: 20px 0; /* Espaçamento acima e abaixo da linha */
+    color: #a09f9f;
+    font-size: 15px;
+    text-align: center;
+    height: 1px; /* Altura da linha (pode ser ajustada) */
+}
+
+/* Estilos para o SVG */
+.svg-background {
+    position: absolute;
+    flex-wrap: wrap;
+    margin-top: 0%;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    pointer-events: none;
+}
+
+footer {
+    background-color: #0056b3;
+    left: 0;
+    margin-top: 5%;
+    bottom: 0;
+    width: 100%;
+}
+
+p {
+       position: relative;
+ color: black;
+    text-align: justify;
+}
+
+footer p {
+    color: white;
+    text-align: center;
+}
+
+/* Estilos para o conteúdo da página */
+
+.navbar-custom .navbar-nav .nav-link {
+    color: white;
+    text-decoration: none !important;
+    transition: color 0.3s;
+}
+
+.navbar-custom .navbar-nav .nav-link:hover {
+    color: #0056b3;
+}
+
+@media screen AND (max-width: 1023px) {
+
+    *{
+        font-size: 1.35rem;
+    }
+    body {
+        font-size: 1.4rem;
+    }
+
+    body button {
+        font-size: 1.4rem;
+    }
+
+    .login-box {
+        width: 100%;
+    }
+
+    footer {
+        background-color: #0056b3;
+        left: 0;
+        margin-top: 5%;
+        position: fixed; /* Torna o rodapé fixo no canto inferior */
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+}

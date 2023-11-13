@@ -1,0 +1,107 @@
+.shadow{
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo para os cards */
+.card:hover {
+    background-color: #429dff;
+    color: white;
+    box-shadow: 0 0 10px rgba(66, 157, 255, 0.5);
+}
+
+.card {
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    height: 250px;
+}
+
+.p-style{
+    margin: auto;
+    background-color: white;
+    padding: 2%;
+    border-radius: 5px;
+    height: 345px;
+    padding-bottom: 7%;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+#carousel{
+    border-radius: 15px;
+}
+
+#motiv{
+    background: -webkit-linear-gradient(left, #2c71ba, #523172);
+    background: -moz-linear-gradient(left, #2c71ba, #523172);
+    background: -ms-linear-gradient(left, #2c71ba, #523172);
+    background: -o-linear-gradient(left, #2c71ba, #523172);
+    background: linear-gradient(to right, #2c71ba, #523172);
+}
+
+
+@media screen AND (min-width: 1024px) AND (max-width: 1439px){
+    .p-style{
+        margin: auto;
+        background-color: white;
+        padding: 2%;
+        border-radius: 5px;
+        height: 100%;
+        padding-bottom: 7%;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    }
+}
+
+@media screen AND (min-width: 1024px) AND (max-width: 1439px) AND (height: 800px){
+    .p-style{
+        margin: auto;
+        background-color: white;
+        padding: 2%;
+        border-radius: 5px;
+        height: 100%;
+        padding-bottom: 7%;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    }
+}
+
+@media screen AND (width: 1024px){
+    .p-style{
+        margin: auto;
+        background-color: white;
+        padding: 2%;
+        border-radius: 5px;
+        height: 100%;
+        padding-bottom: 0.6%;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    }
+}
+
+
+@media screen AND (min-width: 1440px){
+    .p-style{
+        margin: auto;
+        background-color: white;
+        padding: 2%;
+        border-radius: 5px;
+        padding-bottom: 12%;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+
+    }
+
+    footer{
+        position: fixed;
+    }
+}
+
+@media screen AND (max-width: 1439px){
+    .p-style{
+        margin: auto;
+        background-color: white;
+        padding: 2%;
+        border-radius: 5px;
+        padding-bottom: 12%;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+        text-overflow: clip;
+    }
+
+    footer{
+        position: fixed;
+    }
+}

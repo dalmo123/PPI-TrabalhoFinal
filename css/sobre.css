@@ -1,0 +1,47 @@
+h3{
+    font-weight: bold;
+    color: #656565;
+}
+
+.p-style{
+    width: 100%;
+    margin: auto;
+    background-color: white;
+    padding: 2%;
+    border-radius: 5px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card{
+    color: white;
+}
+
+.card{
+    background: -webkit-linear-gradient(left, #429dff, #523172);
+    background: -moz-linear-gradient(left, #429dff, #523172);
+    background: -ms-linear-gradient(left, #429dff, #523172);
+    background: -o-linear-gradient(left, #429dff, #523172);
+    background: linear-gradient(to right, #429dff, #523172);
+}
+
+@media screen AND (min-width: 2300px) {
+    footer {
+        background-color: #0056b3;
+        left: 0;
+        margin-top: 5%;
+        position: fixed; 
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media screen AND (max-width: 1023px) {
+    .presentation{
+        margin-bottom: 10%;
+    }
+
+    #disc{
+        padding-bottom: 15%;
+    }
+}

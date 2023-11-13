@@ -1,0 +1,52 @@
+body{
+    overflow-wrap: normal;
+}
+
+#tel, #site, #lb-site, #lb-tel{
+    display: none;
+}
+
+.form-box{
+    width: 100%;
+    margin: auto;
+    background-color: white;
+    padding: 2%;
+    border-radius: 5px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.content {
+    position: relative;
+    flex-grow: 1;
+    margin-bottom: 13%;
+    z-index: 1; 
+    background-color: transparent; 
+    padding: 20px; 
+}
+
+
+@media screen AND (min-width: 1024px) AND (min-height: 900px){
+
+    footer {
+        background-color: #0056b3;
+        left: 0;
+        margin-top: 5%;
+        position: fixed; 
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media screen AND (min-width: 1400px){
+
+    footer {
+        background-color: #0056b3;
+        left: 0;
+        margin-top: 5%;
+        position: fixed; 
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+}

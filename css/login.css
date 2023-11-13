@@ -1,0 +1,80 @@
+.login-box{
+    width: 40%;
+    margin: auto;
+    background-color: white;
+    padding: 2%;
+    margin-bottom: 13%;
+    border-radius: 5px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.content {
+    position: relative;
+    flex-grow: 1;
+    margin-bottom: 13%;
+    z-index: 1; /* Coloca o conteúdo acima do SVG */
+    background-color: transparent; /* Define uma cor de fundo para o conteúdo, se desejado */
+    padding: 20px; /* Espaçamento para o conteúdo */
+}
+
+.total-btn{
+    width: 100%;
+}
+
+@media screen AND (max-width: 1024px){
+
+    footer {
+        background-color: #0056b3;
+        left: 0;
+        margin-top: 5%;
+        position: fixed; 
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .login-box{
+        width: 85%;
+        margin: auto;
+        background-color: white;
+        padding: 2%;
+        margin-bottom: 13%;
+        border-radius: 5px;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    }
+}
+
+@media screen AND (min-width: 1025px) AND (min-height: 900px){
+    .login-box{
+        width: 40%;
+        margin: auto;
+        background-color: white;
+        padding: 2%;
+        margin-bottom: 13%;
+        border-radius: 5px;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    footer {
+        background-color: #0056b3;
+        left: 0;
+        margin-top: 5%;
+        position: fixed; 
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media screen AND (min-width: 1400px){
+
+    footer {
+        background-color: #0056b3;
+        left: 0;
+        margin-top: 5%;
+        position: fixed; 
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+}
