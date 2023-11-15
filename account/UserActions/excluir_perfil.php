@@ -1,3 +1,31 @@
+<?php
+require_once "../UsuarioEntidade.php";
+session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
+    // Se o formulário de confirmação foi enviado
+    require_once "../conexao.php";
+    
+    $usuario = $_SESSION["usuario"];
+    $conn = new Conexao();
+    
+    // Excluir a tupla do banco de dados
+    $sql = "DELETE FROM usuarios WHERE id = ?";
+    $stmt = $conn->conexao->prepare($sql);
+    $stmt->bindParam(1, $usuario->getId());
+    $stmt->execute();
+
+    // Destruir a sessão e redirecionar para a página de login
+    session_destroy();
+    header("Location: ../../login.php");
+    exit();
+}
+?>
+
+
 <!DOCTYPE html>
 <html>
 
@@ -146,7 +174,9 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="exclude-btn" data-bs-toggle="modal">Excluir</button>
+                        <form method="post" action="">
+                            <button type="submit" class="btn btn-primary" name="confirmExclusion">Excluir</button>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -1,3 +1,54 @@
+<?php
+require_once "../UsuarioEntidade.php";
+session_start();
+
+if (isset($_POST["logout"])) {
+    // Destrói a sessão
+    session_destroy();
+
+    // Redireciona para a página de login
+    header("Location: ../../login.php");
+    exit();
+}
+
+if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
+    header("Location: ../../login.php");
+} else {
+    $usuario = $_SESSION["usuario"];
+    
+    // Consulta o ID do usuário no banco de dados
+    require_once "../conexao.php";
+    $conn = new Conexao();
+    $sql = "SELECT id FROM usuarios WHERE id = ?";
+    $stmt = $conn->conexao->prepare($sql);
+    $stmt->bindParam(1, $usuario->getId());
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Recupera os dados do usuário
+    $idUsuario = $result['id'];
+
+    // Consulta as postagens aprovadas
+    $sqlAprovadas = "SELECT * FROM postagens WHERE id_usuario = ? AND status = 'aprovado'";
+    // Após a execução da consulta
+    var_dump($postagensAprovadas);
+    $stmtAprovadas = $conn->conexao->prepare($sqlAprovadas);
+    $stmtAprovadas->bindParam(1, $idUsuario);
+    $stmtAprovadas->execute();
+    $postagensAprovadas = $stmtAprovadas->fetchAll(PDO::FETCH_ASSOC);
+
+    // Consulta as postagens em espera
+    $sqlEmEspera = "SELECT * FROM postagens WHERE id_usuario = ? AND status = 'espera'";
+    var_dump($postagensEmEspera);
+    $stmtEmEspera = $conn->conexao->prepare($sqlEmEspera);
+    $stmtEmEspera->bindParam(1, $idUsuario);
+    $stmtEmEspera->execute();
+    $postagensEmEspera = $stmtEmEspera->fetchAll(PDO::FETCH_ASSOC);
+}
+    
+
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -5,8 +56,11 @@
     <title>SALVAR | Minhas Postagens</title>
     <meta charset="utf-8">
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <!-- Estilos CSS personalizados -->
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/login.css">
@@ -17,8 +71,8 @@
     <!-- Barra de Navegação -->
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
-        <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png" class="img-fluid"
-                    width="200"></a>
+            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png"
+                    class="img-fluid" width="200"></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -44,7 +98,7 @@
                 </div>
             </div>
 
-             <!-- Botão Burger -->
+            <!-- Botão Burger -->
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon text-white"></span>
@@ -54,7 +108,8 @@
 
     <!-- Menu offcanvas lateral -->
     <aside>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample"
+            aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
                 <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel">Nome do Usuário</h5>
@@ -70,9 +125,12 @@
                     <li class="separator">
                         <button type="button" class="btn btn-outline-primary w-100 mt-3" data-bs-toggle="modal"
                             data-bs-target="#confirmExitModal">Sair
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                                <path fill-rule="evenodd"
+                                    d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
                             </svg>
                         </button>
                     </li>
@@ -127,57 +185,70 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Arroz</td>
-                        <td>10 kg</td>
-                        <td>-</td>
-                        <td>10/03/24</td>
-                        <td> 
-                            <button class="btn btn-danger mb-1" data-bs-target="#staticBackdrop">Excluir Postagem</button>
-                            <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile">Editar Postagem</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Feijão</td>
-                        <td>6 Kg</td>
-                        <td>Alguma observação sobre feijão.</td>
-                        <td>24/11/23</td>
-                        <td> 
-                            <button class="btn btn-danger mb-1" data-bs-target="#staticBackdrop">Excluir Postagem</button>
-                            <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile">Editar Postagem</button>
-                        </td>
-                    </tr>
+                    <?php foreach ($postagensAprovadas as $postagem): ?>
+                            <tr>
+                                <td>
+                                    <?php echo $postagem['alimento']; ?>
+                                </td>
+                                <td>
+                                    <?php echo $postagem['quantidade'] . ' ' . $postagem['unidade_medida']; ?>
+                                </td>
+                                <td>
+                                    <?php echo $postagem['observacoes']; ?>
+                                </td>
+                                <td>
+                                    <?php echo $postagem['data_validade']; ?>
+                                </td>
+                                <td>
+                                    <!-- Adicione os botões de ação conforme necessário -->
+                                    <button class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Excluir Postagem</button>
+                                    <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#editModal">Editar Postagem</button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
 
-        <h3 class="mb-4">Postagens em Espera</h3>
-
+        <!-- Código HTML para exibir as postagens em espera -->
+        <h3 class="mb-4" id="h3-2">Postagens em Espera</h3>
         <div class="table-responsive">
-            <table class="table table-striped table-bordless mt-3" id="table1">
+            <table class="table table-striped table-bordless mt-3" id="table2">
                 <thead class="table-dark">
                     <tr>
                         <th scope="col">Alimento</th>
                         <th scope="col">Quantidade</th>
                         <th scope="col">Observações</th>
                         <th scope="col">Data de Validade</th>
+                        <th scope="col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Farinha de Trigo</td>
-                        <td>10 kg</td>
-                        <td>-</td>
-                        <td>02/01/24</td>
-                    </tr>
-                    <tr>
-                        <td>Leite</td>
-                        <td>4L</td>
-                        <td>Desnatado ou integral</td>
-                        <td>03/03/24</td>
-                    </tr>
+                    <?php foreach ($postagensEmEspera as $postagem): ?>
+                            <tr>
+                                <td>
+                                    <?php echo $postagem['alimento']; ?>
+                                </td>
+                                <td>
+                                    <?php echo $postagem['quantidade'] . ' ' . $postagem['unidade_medida']; ?>
+                                </td>
+                                <td>
+                                    <?php echo $postagem['observacoes']; ?>
+                                </td>
+                                <td>
+                                    <?php echo $postagem['data_validade']; ?>
+                                </td>
+                                <td>
+                                    <!-- Adicione os botões de ação conforme necessário -->
+                                    <button class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Excluir Postagem</button>
+                                    <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#editModal">Editar Postagem</button>
+                                </td>
+                               
+                            </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
+
         </div>
 
         <!-- Modal de confirmação de saída -->
@@ -200,68 +271,74 @@
             </div>
         </div>
 
-        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal fade" id="confirmDeleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Excluir Postagem</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Excluir Postagem</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Caso se confirme a exclusão, a postagem deixará de existir permanentemente. Deseja realmente
+                            excluir esta postagem?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" id="confirmDelete" class="btn btn-primary">Excluir</button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <p>Caso se confirme a exclusão, a postagem deixará de existir permanentemente. Deseja realmente excluir esta postagem?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="confirmDelete" class="btn btn-primary">Excluir</button>
-                </div>
-            </div>
             </div>
         </div>
 
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Solicitar Edição de Postagem</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-floating mb-2">
-                            <input type="text" class="form-control" id="floatingInput1" placeholder="Alimento" required>
-                            <label for="floatingInput1">Alimento (Arroz, feijao, etc..)</label>
-                        </div>
-                        <div class="row">
-                            <div class="form-floating mb-2 col-lg-6">
-                                <input type="number" class="form-control bg-transparent" id="floatingInput2" placeholder="Quantidade" required>
-                                <label for="floatingInput2" class="adjust">Quantidade</label>
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Solicitar Edição de Postagem</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="POST">
+                            <div class="form-floating mb-2">
+                                <input type="text" class="form-control" id="floatingInput1" placeholder="Alimento"
+                                    required>
+                                <label for="floatingInput1">Alimento (Arroz, feijao, etc..)</label>
                             </div>
-                            <div class="form-floating mb-2 col-lg-6">
-                                <label for="select" class="m-1 p-3" id="lb-select">Unidade de Medida</label>
-                                <select class="form-select" id="select" aria-label="Tipo de Conta" required>
-                                    <option selected value="" aria-placeholder="Unidade de Medida"></option>
-                                    <option value="Kg">Kg</option>
-                                    <option value="g">g</option>
-                                    <option value="L">L</option>
-                                    <option value="ml">ml</option>
-                                </select>
+                            <div class="row">
+                                <div class="form-floating mb-2 col-lg-6">
+                                    <input type="number" class="form-control bg-transparent" id="floatingInput2"
+                                        placeholder="Quantidade" required>
+                                    <label for="floatingInput2" class="adjust">Quantidade</label>
+                                </div>
+                                <div class="form-floating mb-2 col-lg-6">
+                                    <label for="select" class="m-1 p-3" id="lb-select">Unidade de Medida</label>
+                                    <select class="form-select" id="select" aria-label="Tipo de Conta" required>
+                                        <option selected value="" aria-placeholder="Unidade de Medida"></option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="g">g</option>
+                                        <option value="L">L</option>
+                                        <option value="ml">ml</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>      
-                        <div class="form-floating mb-2">
-                            <input type="date" class="form-control" id="floatingInput3" placeholder="Data de Validade" required>
-                            <label for="floatingInput3">Data de Validade</label>
-                        </div>
-                        <div class="form-floating mb-2 input-group">
-                            <span class="input-group-text">Observações</span>
-                            <textarea class="form-control" aria-label="Observações" rows="3" maxlength="100" id="text-area"></textarea>
-                            <legend class="p-1"><i>Máximo de 100 caracteres</i></legend>
-                          </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="submit" class="btn btn-primary">Enviar</button>
-                </div>
+                            <div class="form-floating mb-2">
+                                <input type="date" class="form-control" id="floatingInput3"
+                                    placeholder="Data de Validade" required>
+                                <label for="floatingInput3">Data de Validade</label>
+                            </div>
+                            <div class="form-floating mb-2 input-group">
+                                <span class="input-group-text">Observações</span>
+                                <textarea class="form-control" aria-label="Observações" rows="3" maxlength="100"
+                                    id="text-area"></textarea>
+                                <legend class="p-1"><i>Máximo de 100 caracteres</i></legend>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
                 </div>
             </div>
         </div>

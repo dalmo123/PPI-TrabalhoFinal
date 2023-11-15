@@ -1,51 +1,68 @@
 <?php
+require_once "../UsuarioEntidade.php";
+session_start();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION["usuario"])) {
+if (isset($_POST["logout"])) {
+    // Destrói a sessão
+    session_destroy();
 
-    // Dados de conexão com o banco de dados (substitua pelas suas credenciais)
-    $servername = "sql109.infinityfree.com";
-    $username = "if0_34787818";
-    $password = "jyiUTaabL7fF45";
-    $dbname = "if0_34787818_trabalho_final";
+    // Redireciona para a página de login
+    header("Location: ../../login.php");
+    exit();
+}
+
+if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
+    header("Location: ../../login.php");
+} else {
+    $usuario = $_SESSION["usuario"];
+    // Consulta o ID do usuário no banco de dados
+    require_once "../conexao.php";
+    $conn = new Conexao();
+    $sql = "SELECT id FROM usuarios WHERE id = ?";
+    $stmt = $conn->conexao->prepare($sql);
+    $stmt->bindParam(1, $usuario->getId());
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Recupera os dados do usuário
+    $idUsuario = $result['id'];
+}
+
+
+
+//processamento do formulario
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    require_once "../conexao.php";  // Certifique-se de incluir sua lógica de conexão correta aqui
+
+    $usuario = $_SESSION["usuario"];
+    $idUsuario = $usuario->getId();
+    $alimento = !empty($_POST["alimento"]) ? $_POST["alimento"] : null;
+    $quantidade = !empty($_POST["quantidade"]) ? $_POST["quantidade"] : null;
+    $unidadeMedida = !empty($_POST["unidade_medida"]) ? $_POST["unidade_medida"] : null;
+    $dataValidade = !empty($_POST["data_validade"]) ? $_POST["data_validade"] : null;
+    $observacoes = !empty($_POST["observacoes"]) ? $_POST["observacoes"] : null;
+    $status = "espera";
 
     try {
-        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Restante do código para processar a solicitação e inserir dados no banco de dados
-        // ...
-            $id_usuario = 2; // Defina um valor padrão (2, por exemplo) para teste
-
-        // Coletar dados do formulário
-        $alimento = $_POST["alimento"];
-        $quantidade = $_POST["quantidade"];
-        $unidade_medida = $_POST["unidade_medida"];
-        $data_validade = $_POST["data_validade"];
-        $observacoes = $_POST["observacoes"];
-        $status = "espera"; // Defina o status como "espera"
-        
-         $stmt = $conn->conexao->prepare("INSERT INTO postagens (id_usuario, alimento, quantidade, unidade_medida, data_validade, observacoes, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bindParam(1, $id_usuario);
+        $sql = "INSERT INTO postagens (id_usuario, alimento, quantidade, unidade_medida, data_validade, observacoes, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->conexao->prepare($sql);
+        $stmt->bindParam(1, $idUsuario);
         $stmt->bindParam(2, $alimento);
         $stmt->bindParam(3, $quantidade);
-        $stmt->bindParam(4, $unidade_medida);
-        $stmt->bindParam(5, $data_validade);
+        $stmt->bindParam(4, $unidadeMedida);
+        $stmt->bindParam(5, $dataValidade);
         $stmt->bindParam(6, $observacoes);
         $stmt->bindParam(7, $status);
 
-        // Executar a consulta
-        if ($stmt->execute()) {
-            echo "Solicitação de postagem registrada com sucesso. Aguarde a aprovação.";
-        } else {
-            // Mensagem de erro em caso de falha na execução
-            $errorInfo = $stmt->errorInfo();
-            echo "Erro ao registrar a solicitação de postagem: " . $errorInfo[2];
-        }
+        $stmt->execute();
+
     } catch (PDOException $e) {
         echo "Erro ao registrar a solicitação de postagem: " . $e->getMessage();
     }
 }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -154,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION["usuario"])) {
             <img src="../imagens/brand.png" width="80" class="img-fluid" alt="">
             <p class="pt-1 text-center">Solicite sua postagem no sistema SALVAR</p>
         </div>
-        <form id="loginForm" action="solicitar_postagem.php" method="POST">
+        <form id="loginForm" action="" method="POST">
             <div class="form-floating mb-2">
                 <input type="text" class="form-control" id="floatingInput1" placeholder="Alimento" name="alimento" required>
                 <label for="floatingInput1">Alimento (Arroz, feijao, etc..)</label>
