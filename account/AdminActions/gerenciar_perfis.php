@@ -38,7 +38,7 @@
 <html>
 
 <head>
-    <title>SALVAR | Lista de Itens</title>
+    <title>SALVAR | Gerenciar Perfis</title>
     <meta charset="utf-8">
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -174,16 +174,20 @@
                 <div class="modal-body">
                     
                         <div class="form-floating mb-2">
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Nome" value="Nome do Usuário" autocomplete="on">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Nome" autocomplete="on">
                             <label for="name">Nome</label>
                         </div>
                         <div class="form-floating mb-2">
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="usuario@example.com" autocomplete="on">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email" autocomplete="on">
                             <label for="email">Email</label>
                         </div>
                         <div class="form-floating mb-2">
-                            <input type="text" class="form-control" id="tel" name="tel" placeholder="Telefone" value="Telefone do Usuário" autocomplete="on">
+                            <input type="text" class="form-control" id="tel" name="tel" placeholder="Telefone" autocomplete="on">
                             <label for="tel">Telefone</label>
+                        </div>
+                        <div class="form-floating mb-2 d-none" id="siteDiv">
+                            <input type="text" class="form-control" id="site" name="site" placeholder="Site" autocomplete="on">
+                            <label for="site">Site</label>
                         </div>
                         <div class="mb-3">
                             <label for="profilePicture" class="form-label">Foto de Perfil</label>
@@ -193,7 +197,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    <button type="submit" class="btn btn-primary" id="saveChanges">Salvar Alterações</button>
                 </div>
                 </form>
                 </div>
@@ -224,7 +228,7 @@
         <div class="accordion ip-group mb-5" id="accordionPanelsStayOpenExample">
             <?php
             // Consulta ao banco de dados para obter perfis
-            $sql_perfis = "SELECT id, nome, tipo_conta FROM usuarios WHERE id!=1";
+            $sql_perfis = "SELECT id, nome, tipo_conta, email, telefone, site FROM usuarios WHERE id!=1";
             $stmt_perfis = $conn->conexao->prepare($sql_perfis);
             $stmt_perfis->execute();
             $perfis = $stmt_perfis->fetchAll(PDO::FETCH_ASSOC);
@@ -235,6 +239,7 @@
                 $tipo_conta_perfil = $perfil['tipo_conta'];
                 $email_perfil = $perfil['email'];
                 $telefone_perfil = $perfil['telefone'];
+                $site = $perfil['site'];
 
                 echo '<div class="accordion-item">';
                 echo '<h2 class="accordion-header">';
@@ -246,8 +251,9 @@
                 echo '<div id="perfil_' . $id_perfil . '" class="accordion-collapse collapse show">';
                 echo '<div id="perfil-container-' . $id_perfil . '" class="accordion-body">';
                 // Adicione o atributo data-id aos botões
-                echo '<button class="btn btn-danger m-3 delete-profile" data-bs-toggle="modal" data-bs-target="#staticBackdrop" data-id="' . $id_perfil . '">Excluir Perfil</button>';
-    echo '<button class="btn btn-primary m-3 edit-profile" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile" data-id="' . $id_perfil . '" data-nome="'. $nome_perfil .'" data-email="' . $email_perfil . '" data-telefone="' . $telefone_perfil . '">Editar Perfil</button>
+                echo '<button class="btn btn-danger m-3 delete-profile" data-bs-toggle="modal" data-bs-target="#staticBackdrop" data-id="' .  $id_perfil . '">Excluir Perfil</button>
+';
+    echo '<button class="btn btn-primary m-3 edit-profile" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile" data-id="' . $id_perfil . '" data-nome="'. $nome_perfil . '" data-email="' . $email_perfil . '" data-telefone="' . $telefone_perfil . '" data-tipo="' . $tipo_conta_perfil . '" data-site="' . $site . '">Editar Perfil</button>
 ';
                 echo '</div>';
                 echo '</div>';
@@ -257,39 +263,6 @@
             ?>
         </div>
 
-        <?php
-            // Processamento do formulário quando enviado
-            /*if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                // Recupera os dados do formulário
-                $nome = !empty($_POST["name"]) ? $_POST["name"] : null;
-                $email = !empty($_POST["email"]) ? $_POST["email"] : null;
-                $telefone = !empty($_POST["tel"]) ? $_POST["tel"] : null;
-
-                // Atualiza a foto de perfil, se fornecida
-                if (isset($_FILES["profilePicture"]) && $_FILES["profilePicture"]["error"] == 0) {
-                    $foto_perfil_nome = $_FILES["profilePicture"]["name"];
-                    $foto_perfil_tipo = $_FILES["profilePicture"]["type"];
-                    $foto_perfil_dados = file_get_contents($_FILES["profilePicture"]["tmp_name"]);
-                } else {
-                    // Se não fornecida, mantenha os dados atuais no banco
-                    $foto_perfil_nome = null;
-                    $foto_perfil_tipo = null;
-                    $foto_perfil_dados = null;
-                }
-
-                // Atualiza os dados no banco apenas se não estiverem em branco
-                $sql = "UPDATE usuarios SET nome = COALESCE(?, nome), email = COALESCE(?, email), telefone = COALESCE(?, telefone), foto_perfil_nome = COALESCE(?, foto_perfil_nome), foto_perfil_tipo = COALESCE(?, foto_perfil_tipo), foto_perfil_dados = COALESCE(?, foto_perfil_dados) WHERE id = ?";
-                $stmt = $conn->conexao->prepare($sql);
-                $stmt->bindParam(1, $nome);
-                $stmt->bindParam(2, $email);
-                $stmt->bindParam(3, $telefone);
-                $stmt->bindParam(4, $foto_perfil_nome);
-                $stmt->bindParam(5, $foto_perfil_tipo);
-                $stmt->bindParam(6, $foto_perfil_dados);
-                $stmt->bindParam(7, $usuario->getId());
-                $stmt->execute();
-            }*/
-        ?>
         <!-- Modal de confirmação de saída -->
         <div class="modal fade" id="confirmExitModal" tabindex="-1" aria-labelledby="confirmExitModalLabel"
             aria-hidden="true">
@@ -314,78 +287,148 @@
     </div>
     <!-- Adicione este script ao final do corpo do seu HTML -->
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const editButtons = document.querySelectorAll('.edit-profile');
-        const modal = document.getElementById('exampleModal');
-        const nameInput = document.getElementById('name');
-        const emailInput = document.getElementById('email');
-        const telInput = document.getElementById('tel');
+        document.addEventListener('DOMContentLoaded', function () {
+            const editButtons = document.querySelectorAll('.edit-profile');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const telInput = document.getElementById('tel');
+            const siteInput = document.getElementById('site');
+            const siteDiv = document.getElementById('siteDiv');
+            const uploadProfilePictureButton = document.getElementById('uploadProfilePicture');
+            const saveChangesButton = document.getElementById('saveChanges');
 
-        editButtons.forEach(function (button) {
-            button.addEventListener('click', function () {
-                const userId = this.getAttribute('data-id');
-                const nome = this.getAttribute('data-nome');
-                const email = this.getAttribute('data-email');
-                const telefone = this.getAttribute('data-telefone');
+            let userId = null; // Armazenar o ID do usuário
 
-                // Preencher os campos do formulário com os dados do usuário
-                nameInput.value = nome;
-                emailInput.value = email;
-                telInput.value = telefone;
+            editButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    userId = this.getAttribute('data-id');
+                    const userEmail = this.getAttribute('data-email');
+                    const userNome = this.getAttribute('data-nome');
+                    const userTel = this.getAttribute('data-telefone');
+                    const userSite = this.getAttribute('data-site');
+                    const userTipo = this.getAttribute('data-tipo');
 
-                console.log(nome);
+                    nameInput.value = userNome;
+                    emailInput.value = userEmail;
+                    telInput.value = userTel;
+                    siteInput.value = userSite;
 
-                // Adicionar lógica semelhante para lidar com a foto de perfil, se necessário
-
-                // Abrir o modal de edição
-                const editModal = new bootstrap.Modal(modal);
-                editModal.show();
+                    if(userTipo==="ONG"){
+                        siteDiv.classList.add("d-block");
+                        siteDiv.classList.remove("d-none");
+                    }
+                });
             });
-        });
-    });
-</script>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const editButtons = document.querySelectorAll('.edit-profile');
-
-        editButtons.forEach(function (button) {
-            button.addEventListener('click', function () {
-                const userId = this.getAttribute('data-id');
-
-                // Criar um objeto FormData para enviar os dados
+            // Adicione a lógica para enviar os dados ao servidor ao clicar no botão Salvar Alterações
+            saveChangesButton.addEventListener('click', function () {
+                // Obtenha os dados do formulário
                 const formData = new FormData();
                 formData.append('id', userId);
+                formData.append('name', nameInput.value);
+                formData.append('email', emailInput.value);
+                formData.append('tel', telInput.value);
 
-                // Enviar uma solicitação AJAX usando o método POST
+                // Adicione a lógica para enviar a foto de perfil, se fornecida
+                const fileInput = document.getElementById('profilePicture');
+                if (fileInput.files.length > 0) {
+                    formData.append('profilePicture', fileInput.files[0]);
+                }
+
+                // Enviar a solicitação AJAX ao servidor
                 const xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        const userData = JSON.parse(xhr.responseText);
-
-                        // Preencher o formulário com os dados obtidos
-                        document.getElementById('name').value = userData.nome;
-                        document.getElementById('email').value = userData.email;
-                        document.getElementById('tel').value = userData.telefone;
-
-                        // Adicionar lógica semelhante para lidar com a foto de perfil, se necessário
-
-                        // Abrir o modal de edição
-                        const editModal = new bootstrap.Modal(document.getElementById('exampleModal'));
-                        editModal.show();
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            // Atualização bem-sucedida
+                            alert('Alterações salvas com sucesso!');
+                            // Recarregue a página ou execute outras ações necessárias
+                            window.location.reload();
+                        } else {
+                            // Exibição de mensagem de erro, se aplicável
+                            alert('Erro ao salvar as alterações. Tente novamente.');
+                        }
                     }
                 };
 
-                // Modificar o método e a URL
-                xhr.open('POST', 'edit_user.php', true);
+                xhr.open('POST', 'update_profile.php', true);
                 xhr.send(formData);
             });
+        });
+
+</script>
+
+<script>
+    // Aguarde o documento ser totalmente carregado
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtenha uma referência ao modal
+        const deleteModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+
+        // Adicione um ouvinte de evento para o evento hidden.bs.modal
+        deleteModal._element.addEventListener('hidden.bs.modal', function () {
+            // Remova a classe modal-open do corpo da página
+            document.body.classList.remove('modal-open');
+            document.body.style="overflow: auto";
+
+            // Remova o elemento de máscara modal-backdrop
+            const modalBackdrop = document.querySelector('.modal-backdrop');
+            if (modalBackdrop) {
+                modalBackdrop.remove();
+            }
         });
     });
 </script>
 
 
-    <script src="../../js/CRUD_Adm.js"></script>
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.delete-profile');
+    const confirmDeleteButton = document.getElementById('confirmDelete');
+
+    let userIdToDelete = null;
+
+    deleteButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            // Armazena o ID do perfil a ser excluído
+            userIdToDelete = this.getAttribute('data-id');
+        });
+    });
+
+    confirmDeleteButton.addEventListener('click', function () {
+        // Certifique-se de que há um ID de usuário para excluir
+        if (userIdToDelete !== null) {
+            // Enviar solicitação AJAX para exclude.php
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // Exclusão bem-sucedida
+                        alert('Perfil excluído com sucesso!');
+                        // Remover o accordion da página
+                         window.location.href = "gerenciar_perfis.php";
+                    } else {
+                        // Exibição de mensagem de erro, se aplicável
+                        alert('Erro ao excluir o perfil. Tente novamente.');
+                    }
+                }
+            };
+
+            xhr.open('POST', 'exclude.php', true);
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.send('id=' + userIdToDelete);
+
+            // Limpar o ID do usuário a ser excluído
+            userIdToDelete = null;
+        }
+    });
+});
+
+</script>
+
+
+
+  <script src="../../js/CRUD_Adm.js"></script>
 </body>
 <footer class="p-2 text-center text-white">
     <p>Desenvolvido por Gabriel Batista e Dalmo Scalon - Universidade Federal de Uberlândia</p>

@@ -5,6 +5,15 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+if (isset($_POST["logout"])) {
+    // Destrói a sessão
+    session_destroy();
+
+    // Redireciona para a página de login
+    header("Location: ../../login.php");
+    exit();
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
     // Se o formulário de confirmação foi enviado
     require_once "../conexao.php";
@@ -23,6 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
     header("Location: ../../login.php");
     exit();
 }
+
+$usuario = $_SESSION["usuario"];
 ?>
 
 
@@ -30,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
 <html>
 
 <head>
-    <title>SALVAR | Exclusão de Perfi</title>
+    <title>SALVAR | Exclusão de Perfil</title>
     <meta charset="utf-8">
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -44,20 +55,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
     <!-- Barra de Navegação -->
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index_usuario.html"><img src="../imagens/Logo_transp.png" class="img-fluid"
-                    width="200" title="Logo Sistema Salvar" alt=""></a>
+            <!-- Logo à direita -->
+            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png" class="img-fluid"
+                    width="200"></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item text-center">
-                        <a class="nav-link" href="index_usuario.html">Home</a>
+                        <a class="nav-link" href="../index_account.php">Home</a>
                     </li>
                     <li class="nav-item text-center">
-                        <a class="nav-link" href="sobre_usuario.html">Sobre</a>
+                        <a class="nav-link" href="../sobre.php">Sobre</a>
                     </li>
                     <li class="nav-item text-center">
-                        <a class="nav-link" href="lista_itens_usuario.html">Lista de Usuários</a>
+                        <a class="nav-link" href="../lista_itens.php">Lista de Usuários</a>
                     </li>
                 </ul>
                 <div class="ms-auto">
@@ -67,9 +79,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
                     </a>
                 </div>
             </div>
-
-             <!-- Botão Burger -->
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon text-white"></span>
             </button>
@@ -81,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
                 <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
-                <h5 class="offcanvas-title" id="offcanvasExampleLabel">Nome do Usuário</h5>
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
@@ -128,10 +137,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
     <div class="container mt-5">
         <h1 class="text-white">Exclusão de Perfil</h1>
         <div class="text-center">
-            <img src="../imagens/user.png" class="img-fluid rounded-circle text-center" width="160" height="160" alt="">
-            <h3 class="text-center mt-4">Nome do Usuário</h3>
+            <img src="../../imagens/user.png" class="img-fluid rounded-circle text-center" width="160" height="160" alt="">
+            <h3 class="text-center mt-4"><?php echo $usuario->getNome();?></h3>
         </div>
-        <p class="text-center"> Este perfil será excluído permanentemente. Deseja prosseguir com a operação de exclusão.
+        <p class="text-center"> Este perfil será excluído permanentemente. Deseja prosseguir com a operação de exclusão?
         </p>
         <div class="prosseguir text-center mt-4">
             <button class="btn btn-primary prosseguir" data-bs-toggle="modal"
@@ -155,7 +164,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="confirmExitButton">Sair</button>
+                        <form action="" method="post">
+                            <button type="submit" class="btn btn-primary" name="logout" id="confirmExitButton">Sair</button>
+                        </form>
                     </div>
                 </div>
             </div>

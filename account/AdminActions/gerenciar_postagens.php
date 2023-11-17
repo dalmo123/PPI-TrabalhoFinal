@@ -1,7 +1,7 @@
 <?php
     require_once "../UsuarioEntidade.php";
     session_start();
-
+    include "../conexao.php";
     
     if(isset($_POST["logout"])) {
         // Destrói a sessão
@@ -18,7 +18,6 @@
     else {
         $usuario = $_SESSION["usuario"];
         // Consulta o ID do usuário no banco de dados
-        require_once "../conexao.php";
         $conn = new Conexao();
         $sql = "SELECT id, tipo_conta FROM usuarios WHERE email = ? AND nome = ?"; // Supondo que você tenha uma coluna 'tipo_conta' na sua tabela de usuários
         $stmt = $conn->conexao->prepare($sql);
@@ -33,6 +32,35 @@
         // Obtém o tipo de conta
         $tipoConta = $result['tipo_conta'];
     }
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['postId'])) {
+        $postId = $_POST['postId'];
+        echo $postId;
+        $conn = new Conexao();
+
+        try {
+            // Preparar e executar a instrução SQL DELETE
+            $sql = "DELETE FROM postagens WHERE id = ?";
+            $stmt = $conn->conexao->prepare($sql);
+            $stmt->bindParam(1, $postId, PDO::PARAM_INT);
+
+            if ($stmt->execute()) {
+                // A exclusão foi bem-sucedida
+                echo "Postagem excluída com sucesso!";
+                // Você pode adicionar mais lógica aqui, se necessário
+            } else {
+                // Houve um erro na exclusão
+                echo "Erro ao excluir a postagem.";
+            }
+        } catch (PDOException $e) {
+            // Tratar exceções, se necessário
+            echo "Erro: " . $e->getMessage();
+        }
+    }
+}
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -43,6 +71,11 @@
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+     
+    
+
     <!-- Estilos CSS personalizados -->
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/offCanvas.css">
@@ -151,7 +184,7 @@
         </svg>
     </div>
     <div class="container mt-5" id="container">
-        <h1 class="text-white">Gerenciador de Postagens</h1>
+        <h1 class="text-white">Validação de Postagens</h1>
         <div class="input-group mb-5 mt-5">
             <input type="text" class="form-control ip-group" id="search" placeholder="Pesquise ONG ou Fornecedor..."
                 aria-label="Username" aria-describedby="basic-addon1">
@@ -164,157 +197,82 @@
             </span>
         </div>
 
-        <div class="accordion ip-group mb-5" id="accordionPanelsStayOpenExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
-                        aria-controls="panelsStayOpen-collapseOne">
-                        <img src="../../imagens/user.png" class="img-fluid rounded-circle" width="80" alt="">
-                        <span class="name p-3">Maria Silva - Fornecedor</span>
-                    </button>
-                </h2>
-                <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
-                    <div class="accordion-body">
-                        <h3 class="mb-4">Postagens Aprovadas</h3>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordless mt-3" id="table">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th scope="col">Alimento</th>
-                                        <th scope="col">Quantidade</th>
-                                        <th scope="col">Observações</th>
-                                        <th scope="col">Data de Validade</th>
-                                        <th scope="col">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Arroz</td>
-                                        <td>10 kg</td>
-                                        <td>-</td>
-                                        <td>10/03/24</td>
-                                        <td> 
-                                            <button class="btn btn-danger mb-1" data-bs-target="#staticBackdrop">Excluir Postagem</button>
-                                            <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile">Editar Postagem</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Feijão</td>
-                                        <td>6 Kg</td>
-                                        <td>Alguma observação sobre feijão.</td>
-                                        <td>24/11/23</td>
-                                        <td> 
-                                            <button class="btn btn-danger mb-1" data-bs-target="#staticBackdrop">Excluir Postagem</button>
-                                            <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile">Editar Postagem</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false"
-                        aria-controls="panelsStayOpen-collapseTwo">
-                        <img src="../../imagens/user.png" class="img-fluid rounded-circle" width="80" alt="">
-                        <span class="name p-3">Casa da Ajuda - ONG</span>
-                    </button>
-                </h2>
-                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
-                    <div class="accordion-body">
-                        <h3 class="mb-4">Postagens Aprovadas</h3>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordless mt-3" id="table">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th scope="col">Alimento</th>
-                                        <th scope="col">Quantidade</th>
-                                        <th scope="col">Observações</th>
-                                        <th scope="col">Data de Validade</th>
-                                        <th scope="col">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Arroz</td>
-                                        <td>10 kg</td>
-                                        <td>-</td>
-                                        <td>10/03/24</td>
-                                        <td> 
-                                            <button class="btn btn-danger mb-1" data-bs-target="#staticBackdrop">Excluir Postagem</button>
-                                            <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile">Editar Postagem</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Feijão</td>
-                                        <td>6 Kg</td>
-                                        <td>Alguma observação sobre feijão.</td>
-                                        <td>24/11/23</td>
-                                        <td> 
-                                            <button class="btn btn-danger mb-1" data-bs-target="#staticBackdrop">Excluir Postagem</button>
-                                            <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile">Editar Postagem</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false"
-                        aria-controls="panelsStayOpen-collapseThree">
-                        <img src="../../imagens/user.png" class="img-fluid rounded-circle" width="80" alt="">
-                        <span class="name p-3">Gilberto Costa - Fornecedor</span>
-                    </button>
-                </h2>
-                <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
-                    <div class="accordion-body">
-                        <h3 class="mb-4">Postagens Aprovadas</h3>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordless mt-3" id="table">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th scope="col">Alimento</th>
-                                        <th scope="col">Quantidade</th>
-                                        <th scope="col">Observações</th>
-                                        <th scope="col">Data de Validade</th>
-                                        <th scope="col">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Arroz</td>
-                                        <td>10 kg</td>
-                                        <td>-</td>
-                                        <td>10/03/24</td>
-                                        <td> 
-                                            <button class="btn btn-danger mb-1" data-bs-target="#staticBackdrop">Excluir Postagem</button>
-                                            <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile">Editar Postagem</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Feijão</td>
-                                        <td>6 Kg</td>
-                                        <td>Alguma observação sobre feijão.</td>
-                                        <td>24/11/23</td>
-                                        <td> 
-                                            <button class="btn btn-danger mb-1" data-bs-target="#staticBackdrop">Excluir Postagem</button>
-                                            <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@profile">Editar Postagem</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+         <div class="accordion ip-group mb-5" id="accordionPanelsStayOpenExample">
+            <?php
+            // Consulta ao banco de dados para obter perfis
+            $sql_perfis = "SELECT id, nome, tipo_conta FROM usuarios WHERE id!=1";
+            $stmt_perfis = $conn->conexao->prepare($sql_perfis);
+            $stmt_perfis->execute();
+            $perfis = $stmt_perfis->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($perfis as $perfil) {
+                $id_perfil = $perfil['id'];
+                $nome_perfil = $perfil['nome'];
+                $tipo_conta_perfil = $perfil['tipo_conta'];
+        
+                $sql_postagens = "SELECT id, alimento, quantidade, unidade_medida, data_validade, observacoes FROM postagens WHERE id_usuario=" . $id_perfil . " AND status='aprovada'";
+               
+                $stmt_postagens = $conn->conexao->prepare($sql_postagens);
+                $stmt_postagens->execute();
+                $postagens = $stmt_postagens->fetchAll(PDO::FETCH_ASSOC);
+
+                echo '<div class="accordion-item">';
+                echo '<h2 class="accordion-header">';
+                echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#perfil_' . $id_perfil . '" aria-expanded="true" aria-controls="perfil_' . $id_perfil . '">';
+                echo '<img src="../../imagens/user.png" class="img-fluid rounded-circle" width="80" alt="">';
+                echo '<span class="name p-3">' . $nome_perfil . ' - ' . $tipo_conta_perfil . '</span>';
+                echo '</button>';
+                echo '</h2>';
+                echo '<div id="perfil_' . $id_perfil . '" class="accordion-collapse collapse show">';
+                echo '<div id="perfil-container-' . $id_perfil . '" class="accordion-body">';
+                echo '<div class="accordion-body">';
+                            // Seu código PHP existente ...
+
+                            echo '<h3 class="mb-4">Postagens Aprovadas</h3>';
+                            echo '<div class="table-responsive">';
+                            echo '<table class="table table-striped table-bordless mt-3" id="table1">';
+                            echo '<thead class="table-dark">';
+                            echo '<tr>';
+                            echo '<th scope="col" class="text-center">Alimento</th>';
+                            echo '<th scope="col" class="text-center">Quantidade</th>';
+                            echo '<th scope="col" class="text-center">Observações</th>';
+                            echo '<th scope="col" class="text-center">Data de Validade</th>';
+                            echo '<th scope="col" class="text-center">Ações</th>';
+                            echo '</tr>';
+                            echo '</thead>';
+                            echo '<tbody>';
+
+                            foreach($postagens as $postagem){
+                                $alimento = $postagem['alimento'];
+                                $qtd = $postagem['quantidade'];
+                                $unidade = $postagem['unidade_medida'];
+                                $obs = $postagem['observacoes'];
+                                $data = $postagem['data_validade'];
+
+                                echo '<tr>';
+                                echo '<td class="text-center">'. $alimento .'</td>';
+                                echo '<td class="text-center">'. $qtd . $unidade .'</td>';
+                                echo '<td class="text-center">'. $obs .'</td>';
+                                echo '<td class="text-center">'. $data .'</td>';
+                                echo '<td class="text-center">';
+                                echo '<button class="btn btn-danger m-1 delete-post" data-bs-toggle="modal" data-bs-target="#staticBackdrop" data-id="' . $postagem['id'] . '">Excluir Postagem</button>';
+                                echo '<button class="btn btn-primary m-1 edit-post" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="' . $postagem['id'] . '" data-alimento="'. $alimento .'" data-qtd="' . $qtd . '" data-unidade="' . $unidade . '" data-obs="' . $obs . '" data-data="' . $data . '">Editar Postagem</button>';
+                                echo '</td>';
+                                echo '</tr>';
+                            }
+
+                            echo '</tbody>';
+                            echo '</table>';
+                            echo '</div>';
+
+                            // Seu código PHP existente ...
+                        
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+            }
+            ?>
         </div>
 
         <!-- Modal de confirmação de saída -->
@@ -351,7 +309,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="confirmDelete" class="btn btn-primary">Excluir</button>
+                    <?php echo '<button class="btn btn-danger m-1 delete-post" id="confirmDelete" data-id="' . $postagem['id'] . '">Excluir</button>';?>
                 </div>
             </div>
             </div>
@@ -365,19 +323,20 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="editPostForm" action="update_post.php" method="post">
+                        <input type="hidden" id="postId" name="postId">
                         <div class="form-floating mb-2">
-                            <input type="text" class="form-control" id="floatingInput1" placeholder="Alimento" required>
+                            <input type="text" class="form-control" id="floatingInput1" placeholder="Alimento" name="alimento">
                             <label for="floatingInput1">Alimento (Arroz, feijao, etc..)</label>
                         </div>
                         <div class="row">
                             <div class="form-floating mb-2 col-lg-6">
-                                <input type="number" class="form-control bg-transparent" id="floatingInput2" placeholder="Quantidade" min="0.1" required>
+                                <input type="number" class="form-control bg-transparent" id="floatingInput2" placeholder="Quantidade" min="1" name="quantidade">
                                 <label for="floatingInput2" class="adjust">Quantidade</label>
                             </div>
                             <div class="form-floating mb-2 col-lg-6">
-                                <label for="select" class="m-1 p-3" id="lb-select">Unidade de Medida</label>
-                                <select class="form-select" id="select" aria-label="Tipo de Conta" required>
+                                <label for="select" class="m-1 p-3 d-none" id="lb-select">Unidade de Medida</label>
+                                <select class="form-select" id="select" aria-label="Tipo de Conta" name="unidade">
                                     <option selected value="" aria-placeholder="Unidade de Medida"></option>
                                     <option value="Kg">Kg</option>
                                     <option value="g">g</option>
@@ -387,28 +346,86 @@
                             </div>
                         </div>      
                         <div class="form-floating mb-2">
-                            <input type="date" class="form-control" id="floatingInput3" placeholder="Data de Validade" required>
+                            <input type="date" class="form-control" id="floatingInput3" placeholder="Data de Validade" name="data">
                             <label for="floatingInput3">Data de Validade</label>
                         </div>
                         <div class="form-floating mb-2 input-group">
                             <span class="input-group-text">Observações</span>
-                            <textarea class="form-control" id="text-area" aria-label="Observações" rows="3" maxlength="100"></textarea>
+                            <textarea class="form-control" id="text-area" aria-label="Observações" rows="3" maxlength="100" name="obs"></textarea>
                             <legend class="p-1"><i>Máximo de 100 caracteres</i></legend>
                           </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    <button type="submit" class="btn btn-primary" form="editPostForm">Salvar Alterações</button>
                 </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="../../js/CRUD_Adm_Post.js"></script>
+       <!-- <script src="../../js/CRUD_Adm_Post.js"></script>-->
+     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editButtons = document.querySelectorAll('.edit-post');
+            const deleteButtons = document.querySelectorAll('.delete-post');
+            const confirmDeleteButton = document.getElementById('confirmDelete');
+            let postId = null;
+
+            editButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    postId = this.getAttribute('data-id');
+                    const alimento = this.getAttribute('data-alimento');
+                    const qtd = this.getAttribute('data-qtd');
+                    const unidade = this.getAttribute('data-unidade');
+                    const obs = this.getAttribute('data-obs');
+                    const data = this.getAttribute('data-data');
+
+                    document.getElementById('postId').value = postId;
+                    document.getElementById('floatingInput1').value = alimento;
+                    document.getElementById('floatingInput2').value = qtd;
+                    document.getElementById('select').value = unidade;
+                    document.getElementById('floatingInput3').value = data;
+                    document.getElementById('text-area').value = obs;
+                });
+            });
+
+            deleteButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    postId = this.getAttribute('data-id');
+                    confirmarExclusao(postId);
+                });
+            });
+
+            document.getElementById('confirmDelete').addEventListener('click', function () {
+                var postId = this.getAttribute('data-id');
+                excluirPostagem(postId);
+            });
+
+            function confirmarExclusao(postId) {
+                $('#staticBackdrop').modal('show');
+                document.getElementById('confirmDelete').setAttribute('data-id', postId);
+            }
+
+            function excluirPostagem(postId) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'gerenciar_postagem.php', true);
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        console.log(xhr.responseText);
+                        $('#staticBackdrop').modal('hide');
+                        location.reload();
+                    }
+                };
+
+                xhr.send('postId=' + postId);
+            }
+        });
+    </script>
 </body>
-<footer class="p-2 text-center text-white">
+<footer class="p-2 text-center text-white w-100">
     <p>Desenvolvido por Gabriel Batista e Dalmo Scalon - Universidade Federal de Uberlândia</p>
 </footer>
-
 </html>

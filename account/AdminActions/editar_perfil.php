@@ -18,7 +18,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     // Consulta o ID do usuário no banco de dados
     require_once "../conexao.php";
     $conn = new Conexao();
-    $sql = "SELECT id, tipo_conta FROM usuarios WHERE email = ? AND nome = ?";
+    $sql = "SELECT id, email, site, tipo_conta, telefone, nome FROM usuarios WHERE email = ? AND nome = ?";
     $stmt = $conn->conexao->prepare($sql);
     $stmt->bindParam(1, $usuario->getEmail());
     $stmt->bindParam(2, $usuario->getNome());
@@ -38,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = !empty($_POST["name"]) ? $_POST["name"] : null;
     $email = !empty($_POST["email"]) ? $_POST["email"] : null;
     $telefone = !empty($_POST["tel"]) ? $_POST["tel"] : null;
+    $site = !empty($_POST["site"]) ? $_POST["site"] : null;
 
     // Atualiza a foto de perfil, se fornecida
     if (isset($_FILES["profilePicture"]) && $_FILES["profilePicture"]["error"] == 0) {
@@ -52,16 +53,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Atualiza os dados no banco apenas se não estiverem em branco
-    $sql = "UPDATE usuarios SET nome = COALESCE(?, nome), email = COALESCE(?, email), telefone = COALESCE(?, telefone), foto_perfil_nome = COALESCE(?, foto_perfil_nome), foto_perfil_tipo = COALESCE(?, foto_perfil_tipo), foto_perfil_dados = COALESCE(?, foto_perfil_dados) WHERE id = ?";
+    $sql = "UPDATE usuarios SET nome = COALESCE(?, nome), email = COALESCE(?, email), telefone = COALESCE(?, telefone), site = COALESCE(?, site), foto_perfil_nome = COALESCE(?, foto_perfil_nome), foto_perfil_tipo = COALESCE(?, foto_perfil_tipo), foto_perfil_dados = COALESCE(?, foto_perfil_dados) WHERE id = ?";
     $stmt = $conn->conexao->prepare($sql);
     $stmt->bindParam(1, $nome);
     $stmt->bindParam(2, $email);
     $stmt->bindParam(3, $telefone);
-    $stmt->bindParam(4, $foto_perfil_nome);
-    $stmt->bindParam(5, $foto_perfil_tipo);
-    $stmt->bindParam(6, $foto_perfil_dados);
-    $stmt->bindParam(7, $usuario->getId());
-    $stmt->execute();
+    $stmt->bindParam(4, $site);
+    $stmt->bindParam(5, $foto_perfil_nome);
+    $stmt->bindParam(6, $foto_perfil_tipo);
+    $stmt->bindParam(7, $foto_perfil_dados);
+    $stmt->bindParam(8, $usuario->getId());
+    
+    if($stmt->execute()){
+        $msg = "Alterações salvas com sucesso!";
+    }else{
+        $msg = "Ocorreu um erro! Não foi possível salvar os dados.";
+    }
 }
 ?>
 
@@ -69,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 
 <head>
-    <title>SALVAR | Cadastro de Usuário</title>
+    <title>SALVAR | Editar Perfil</title>
     
     <meta charset="utf-8">
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
@@ -191,16 +198,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <form id="profileEditForm" action="" method="post" enctype="multipart/form-data">
             <div class="form-floating mb-2">
-                <input type="text" class="form-control" id="name" placeholder="Nome" name="name" value="Nome do Administrador" autocomplete="on">
+                <input type="text" class="form-control" id="name" placeholder="Nome" name="name" <?php echo 'value="' . $result['nome'] . '"'?> autocomplete="on">
                 <label for="name">Nome</label>
             </div>
             <div class="form-floating mb-2">
-                <input type="email" class="form-control" id="email" placeholder="Email" name="email" value="admin@example.com" autocomplete="on">
+                <input type="email" class="form-control" id="email" placeholder="Email" name="email" <?php echo 'value="' . $result['email'] . '"'?> autocomplete="on">
                 <label for="email">Email</label>
             </div>
             <div class="form-floating mb-2">
-                <input type="text" class="form-control" id="tel" placeholder="Telefone" name="tel" value="Telefone do Administrador" autocomplete="on">
+                <input type="text" class="form-control" id="tel" placeholder="Telefone" name="tel" <?php echo 'value="' . $result['telefone'] . '"'?> autocomplete="on">
                 <label for="tel">Telefone</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" data-tipo="<?php echo $tipo_conta ?>" id="site" placeholder="Site" name="site" <?php echo 'value="' . $result['site'] . '"'?> autocomplete="on">
+                <label for="site">Site</label>
             </div>
             <div class="mb-3">
                 <label for="profilePicture" class="form-label">Foto de Perfil</label>
@@ -236,6 +247,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     <script src="../../js/cadastro.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const siteInput = document.getElementById('site');
+            const siteDiv = document.getElementById('siteDiv');
+
+            let userId = null; // Armazenar o ID do usuário
+
+            editButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const userTipo = siteInput.getAttribute('data-tipo');
+
+                    siteInput.value = userSite;
+
+                    if(userTipo==="ONG"){
+                        siteDiv.classList.add("d-block");
+                        siteDiv.classList.remove("d-none");
+                    }
+                });
+            });
+
+        });
+
+</script>
+    <script>
+            const form = document.getElementById('profileEditForm');
+
+            form.addEventListener('submit', function () {
+                <?php echo 'alert("'. $msg .'");'?>
+            });
+
+    </script>
 </body>
 <footer class="p-2 text-center text-white">
     <p>Desenvolvido por Gabriel Batista e Dalmo Scalon - Universidade Federal de Uberlândia</p>
