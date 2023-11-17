@@ -2,9 +2,9 @@
 
 class Conexao {
     private $servername = "sql109.infinityfree.com";
-    private $username = "if0_34787818";
-    private $password = "jyiUTaabL7fF45";
-    private $dbname = "if0_34787818_trabalho_final";
+    private $username = "if0_34791758";
+    private $password = "mP6o3ngCZq";
+    private $dbname = "if0_34791758_trabalho_ppi";
     public $conexao;
 
     function __construct() {

@@ -209,7 +209,7 @@
         echo '</table>';
         echo '</div>';
 
-        $sql_postagens = "SELECT * FROM postagens WHERE id_usuario = " . $usuario['id'];
+        $sql_postagens = "SELECT * FROM postagens WHERE status = 'aprovado' AND id_usuario = " . $usuario['id'];
         $result_postagens = $conn->conexao->query($sql_postagens);
 
         echo '<div class="table-responsive">';

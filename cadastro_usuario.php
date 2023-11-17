@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(7, $foto_perfil_nome);
         $stmt->bindParam(8, $foto_perfil_tipo);
         $stmt->bindParam(9, $foto_perfil_dados, PDO::PARAM_LOB);
-
+        
         // Executar a consulta
         $stmt->execute();
     } catch (PDOException $e) {
