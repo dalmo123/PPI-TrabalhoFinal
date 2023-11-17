@@ -29,7 +29,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     $idUsuario = $result['id'];
 
     // Consulta as postagens aprovadas
-    $sqlAprovadas = "SELECT * FROM postagens WHERE id_usuario = ? AND status = 'aprovado'";
+    $sqlAprovadas = "SELECT * FROM postagens WHERE id_usuario = ? AND status = 'aprovada'";
     // Após a execução da consulta
     var_dump($postagensAprovadas);
     $stmtAprovadas = $conn->conexao->prepare($sqlAprovadas);

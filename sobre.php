@@ -15,7 +15,7 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.html"><img src="imagens/Logo_transp.png" class="img-fluid" width="200" title="Logo Sistema Salvar" alt=""></a>
+            <a class="navbar-brand" href="index.php"><img src="imagens/Logo_transp.png" class="img-fluid" width="200" title="Logo Sistema Salvar" alt=""></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
