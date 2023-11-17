@@ -69,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 
 <head>
-    <title>SALVAR | Cadastro de Usuário</title>
+    <title>SALVAR | Editar Usuário</title>
     
     <meta charset="utf-8">
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
@@ -101,9 +101,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </li>
                     <li class="nav-item text-center">
                         <a class="nav-link" href="../lista_itens.php">Lista de Usuários</a>
-                    </li>
-                    <li class="nav-item text-center">
-                        <a class="nav-link" href="../cadastro_usuario.php">Cadastro</a>
                     </li>
                 </ul>
                 <div class="ms-auto">

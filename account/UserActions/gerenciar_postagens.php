@@ -71,8 +71,9 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     <!-- Barra de Navegação -->
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png"
-                    class="img-fluid" width="200"></a>
+            <!-- Logo à direita -->
+            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png" class="img-fluid"
+                    width="200"></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -86,9 +87,6 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                     <li class="nav-item text-center">
                         <a class="nav-link" href="../lista_itens.php">Lista de Usuários</a>
                     </li>
-                    <li class="nav-item text-center">
-                        <a class="nav-link" href="../cadastro_usuario.php">Cadastro</a>
-                    </li>
                 </ul>
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
@@ -97,9 +95,6 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                     </a>
                 </div>
             </div>
-
-            <!-- Botão Burger -->
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon text-white"></span>
             </button>

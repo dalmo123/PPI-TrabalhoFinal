@@ -83,22 +83,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <header>
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
-        <!-- Barra de Navegação -->
         <div class="container-fluid">
-            <a class="navbar-brand" href="index_usuario.html">
-                <img src="../imagens/Logo_transp.png" class="img-fluid" width="200" title="Logo Sistema Salvar" alt=""></a>
+            <!-- Logo à direita -->
+            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png" class="img-fluid"
+                    width="200"></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item text-center">
-                        <a class="nav-link" href="index_usuario.html">Home</a>
+                        <a class="nav-link" href="../index_account.php">Home</a>
                     </li>
                     <li class="nav-item text-center">
-                        <a class="nav-link" href="sobre_usuario.html">Sobre</a>
+                        <a class="nav-link" href="../sobre.php">Sobre</a>
                     </li>
                     <li class="nav-item text-center">
-                        <a class="nav-link" href="lista_itens_usuario.html">Lista de Usuários</a>
+                        <a class="nav-link" href="../lista_itens.php">Lista de Usuários</a>
                     </li>
                 </ul>
                 <div class="ms-auto">
@@ -108,9 +108,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </a>
                 </div>
             </div>
-
-             <!-- Botão Burger -->
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon text-white"></span>
             </button>
@@ -122,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
                 <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
-                <h5 class="offcanvas-title" id="offcanvasExampleLabel">Nome do Usuário</h5>
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome()?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
