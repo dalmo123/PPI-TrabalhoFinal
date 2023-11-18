@@ -1,9 +1,10 @@
 <?php
 require_once "../UsuarioEntidade.php";
 session_start();
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+
+
+require_once "../../conexao.php";
+$conn = new Conexao();
 
 if (isset($_POST["logout"])) {
     // Destrói a sessão
@@ -16,10 +17,8 @@ if (isset($_POST["logout"])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
     // Se o formulário de confirmação foi enviado
-    require_once "../conexao.php";
 
     $usuario = $_SESSION["usuario"];
-    $conn = new Conexao();
 
     // Excluir a tupla do banco de dados
     $sql = "DELETE FROM usuarios WHERE id = ?";
@@ -78,7 +77,22 @@ $usuario = $_SESSION["usuario"];
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <?php
+                            $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
+                            // Não inclui o administrador 
+                            $stmt = $conn->conexao->prepare($sql); 
+                            $stmt->bindParam(1, $usuario->getId());
+                            $stmt->execute();
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        // Verificar se o usuário tem uma foto de perfil no banco
+                                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                } else {
+                                    // Caso contrário, exibir a imagem padrão
+                                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                }
+                        ?>
                     </a>
                 </div>
             </div>
@@ -93,7 +107,16 @@ $usuario = $_SESSION["usuario"];
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample"
             aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-                <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                 <?php
+                    // Verificar se o usuário tem uma foto de perfil no banco
+                    if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                        $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                        echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    } else {
+                            // Caso contrário, exibir a imagem padrão
+                        echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    }
+                ?>
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel">
                     <?php echo $usuario->getNome(); ?>
                 </h5>
@@ -146,8 +169,16 @@ $usuario = $_SESSION["usuario"];
     <div class="container mt-5">
         <h1 class="text-white">Exclusão de Perfil</h1>
         <div class="text-center">
-            <img src="../../imagens/user.png" class="img-fluid rounded-circle text-center" width="160" height="160"
-                alt="">
+        <?php
+                // Verificar se o usuário tem uma foto de perfil no banco
+                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='160' height='160' alt=''>";
+                } else {
+                        // Caso contrário, exibir a imagem padrão
+                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='160' height='160' alt=''>";
+                }
+            ?>
             <h3 class="text-center mt-4">
                 <?php echo $usuario->getNome(); ?>
             </h3>

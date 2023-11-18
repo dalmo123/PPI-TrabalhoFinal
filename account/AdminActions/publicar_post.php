@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['postId'])) {
 
     // Realize a atualização do status da postagem para "aprovada" no banco de dados aqui
     // Exemplo usando PDO:
-    require_once "../conexao.php";
+    require_once "../../conexao.php";
     $conn = new Conexao();
     $sql = "UPDATE postagens SET status = 'aprovada' WHERE id = ?";
     $stmt = $conn->conexao->prepare($sql);

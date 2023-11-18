@@ -17,7 +17,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     $usuario = $_SESSION["usuario"];
 
     // Consulta o ID do usuário no banco de dados
-    require_once "../conexao.php";
+    require_once "../../conexao.php";
     $conn = new Conexao();
     $sql = "SELECT id FROM usuarios WHERE id = ?";
     $stmt = $conn->conexao->prepare($sql);
@@ -31,7 +31,6 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     // Consulta as postagens aprovadas
     $sqlAprovadas = "SELECT * FROM postagens WHERE id_usuario = ? AND status = 'aprovada'";
     // Após a execução da consulta
-    var_dump($postagensAprovadas);
     $stmtAprovadas = $conn->conexao->prepare($sqlAprovadas);
     $stmtAprovadas->bindParam(1, $idUsuario);
     $stmtAprovadas->execute();
@@ -39,7 +38,6 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
 
     // Consulta as postagens em espera
     $sqlEmEspera = "SELECT * FROM postagens WHERE id_usuario = ? AND status = 'espera'";
-    var_dump($postagensEmEspera);
     $stmtEmEspera = $conn->conexao->prepare($sqlEmEspera);
     $stmtEmEspera->bindParam(1, $idUsuario);
     $stmtEmEspera->execute();
@@ -67,6 +65,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/login.css">
     <link rel="stylesheet" href="../../css/offCanvas.css">
+    <link rel="stylesheet" href="../../css/gerencia.css">
     <link rel="icon" type="image/x-icon" href="../../imagens/brand.png">
 
 </head>
@@ -94,7 +93,22 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <?php
+                            $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
+                            // Não inclui o administrador 
+                            $stmt = $conn->conexao->prepare($sql); 
+                            $stmt->bindParam(1, $usuario->getId());
+                            $stmt->execute();
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        // Verificar se o usuário tem uma foto de perfil no banco
+                                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                } else {
+                                    // Caso contrário, exibir a imagem padrão
+                                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                }
+                        ?>
                     </a>
                 </div>
             </div>
@@ -109,8 +123,17 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample"
             aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-                <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
-                <h5 class="offcanvas-title" id="offcanvasExampleLabel">Nome do Usuário</h5>
+                <?php
+                    // Verificar se o usuário tem uma foto de perfil no banco
+                    if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                        $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                        echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    } else {
+                            // Caso contrário, exibir a imagem padrão
+                        echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    }
+                ?>
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
@@ -170,94 +193,84 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                 </svg>
             </span>
         </div>
-        <h3 class="mb-4" id="h3-1">Postagens Aprovadas</h3>
-        <div class="table-responsive">
-            <table class="table table-striped table-bordless mt-3" id="table">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">Alimento</th>
-                        <th scope="col">Quantidade</th>
-                        <th scope="col">Observações</th>
-                        <th scope="col">Data de Validade</th>
-                        <th scope="col">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($postagensAprovadas as $postagem): ?>
-                        <tr>
-                            <td>
-                                <?php echo $postagem['alimento']; ?>
-                            </td>
-                            <td>
-                                <?php echo $postagem['quantidade'] . ' ' . $postagem['unidade_medida']; ?>
-                            </td>
-                            <td>
-                                <?php echo $postagem['observacoes']; ?>
-                            </td>
-                            <td>
-                                <?php echo $postagem['data_validade']; ?>
-                            </td>
-                            <td>
-                                <!-- Adicione os botões de ação conforme necessário -->
-                                <form action="excluir_postagem.php" method="POST">
-                                    <input type="hidden" name="post_id" value="<?php echo $postagem['id']; ?>">
-                                    <button type="submit" class="btn btn-danger btn-sm mb-1">Excluir Postagem</button>
-                                </form>
-                                <button class="btn btn-primary btn-sm mb-1" data-bs-toggle="modal"
-                                    data-bs-target="#editModal_<?php echo $postagem['id']; ?>">
-                                    Editar Postagem
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
 
-        <!-- Código HTML para exibir as postagens em espera -->
-        <h3 class="mb-4" id="h3-2">Postagens em Espera</h3>
-        <div class="table-responsive">
-            <table class="table table-striped table-bordless mt-3" id="table2">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">Alimento</th>
-                        <th scope="col">Quantidade</th>
-                        <th scope="col">Observações</th>
-                        <th scope="col">Data de Validade</th>
-                        <th scope="col">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($postagensEmEspera as $postagem): ?>
-                        <tr>
-                            <td>
-                                <?php echo $postagem['alimento']; ?>
-                            </td>
-                            <td>
-                                <?php echo $postagem['quantidade'] . ' ' . $postagem['unidade_medida']; ?>
-                            </td>
-                            <td>
-                                <?php echo $postagem['observacoes']; ?>
-                            </td>
-                            <td>
-                                <?php echo $postagem['data_validade']; ?>
-                            </td>
-                            <td>
-                                <!-- Adicione os botões de ação conforme necessário -->
-                                <form action="excluir_postagem.php" method="POST">
-                                    <input type="hidden" name="post_id" value="<?php echo $postagem['id']; ?>">
-                                    <button type="submit" class="btn btn-danger btn-sm mb-1">Excluir Postagem</button>
-                                </form>
-                                <button class="btn btn-primary btn-sm mb-1" data-bs-toggle="modal"
-                                    data-bs-target="#editModal_<?php echo $postagem['id']; ?>">
-                                    Editar Postagem
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+        <?php
+        if (empty($postagensAprovadas) && empty($postagensEmEspera)) {
+            echo '<h3 class="mb-4" id="h3-3">Não foram encontradas postagens vinculadas ao seu perfil.</h3>';
+        } else {
+            if (!empty($postagensAprovadas)) {
+                echo '<h3 class="mb-4" id="h3-1">Postagens Aprovadas</h3>';
+                echo '<div class="table-responsive">';
+                echo '<table class="table table-striped table-bordless mt-3" id="table">';
+                echo '<thead class="table-dark">';
+                echo '<tr>';
+                echo '<th scope="col">Alimento</th>';
+                echo '<th scope="col">Quantidade</th>';
+                echo '<th scope="col">Observações</th>';
+                echo '<th scope="col">Data de Validade</th>';
+                echo '<th scope="col">Ações</th>';
+                echo '</tr>';
+                echo '</thead>';
+                echo '<tbody>';
+                foreach ($postagensAprovadas as $postagem) {
+                    echo '<tr>';
+                    echo '<td>' . $postagem['alimento'] . '</td>';
+                    echo '<td>' . $postagem['quantidade'] . ' ' . $postagem['unidade_medida'] . '</td>';
+                    echo '<td>' . $postagem['observacoes'] . '</td>';
+                    echo '<td>' . $postagem['data_validade'] . '</td>';
+                    echo '<td>';
+                    echo '<form action="excluir_postagem.php" method="POST">';
+                    echo '<input type="hidden" name="post_id" value="' . $postagem['id'] . '">';
+                    echo '<button type="submit" class="btn btn-danger btn-sm mb-1">Excluir Postagem</button>';
+                    echo '</form>';
+                    echo '<button class="btn btn-primary btn-sm mb-1" data-bs-toggle="modal" data-bs-target="#editModal_' . $postagem['id'] . '">';
+                    echo 'Editar Postagem';
+                    echo '</button>';
+                    echo '</td>';
+                    echo '</tr>';
+                }
+                echo '</tbody>';
+                echo '</table>';
+                echo '</div>';
+            }
+
+            if (!empty($postagensEmEspera)) {
+                echo '<h3 class="mb-4" id="h3-2">Postagens em Espera</h3>';
+                echo '<div class="table-responsive">';
+                echo '<table class="table table-striped table-bordless mt-3" id="table1">';
+                echo '<thead class="table-dark">';
+                echo '<tr>';
+                echo '<th scope="col">Alimento</th>';
+                echo '<th scope="col">Quantidade</th>';
+                echo '<th scope="col">Observações</th>';
+                echo '<th scope="col">Data de Validade</th>';
+                echo '<th scope="col">Ações</th>';
+                echo '</tr>';
+                echo '</thead>';
+                echo '<tbody>';
+                foreach ($postagensEmEspera as $postagem) {
+                    echo '<tr>';
+                    echo '<td>' . $postagem['alimento'] . '</td>';
+                    echo '<td>' . $postagem['quantidade'] . ' ' . $postagem['unidade_medida'] . '</td>';
+                    echo '<td>' . $postagem['observacoes'] . '</td>';
+                    echo '<td>' . $postagem['data_validade'] . '</td>';
+                    echo '<td>';
+                    echo '<form action="excluir_postagem.php" method="POST">';
+                    echo '<input type="hidden" name="post_id" value="' . $postagem['id'] . '">';
+                    echo '<button type="submit" class="btn btn-danger btn-sm mb-1">Excluir Postagem</button>';
+                    echo '</form>';
+                    echo '<button class="btn btn-primary btn-sm mb-1" data-bs-toggle="modal" data-bs-target="#editModal_' . $postagem['id'] . '">';
+                    echo 'Editar Postagem';
+                    echo '</button>';
+                    echo '</td>';
+                    echo '</tr>';
+                }
+                echo '</tbody>';
+                echo '</table>';
+                echo '</div>';
+            }
+        }
+        ?>
 
         <!-- Modal de confirmação de saída -->
         <div class="modal fade" id="confirmExitModal" tabindex="-1" aria-labelledby="confirmExitModalLabel"
@@ -273,7 +286,9 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="confirmExitButton">Sair</button>
+                        <form action="" method="post">
+                            <button type="submit" class="btn btn-primary" name="logout" id="confirmExitButton">Sair</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -311,8 +326,8 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                         <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Postagem</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+                    <form action="editar_postagem.php" method="POST">
                     <div class="modal-body">
-                        <form action="editar_postagem.php" method="POST">
                             <input type="hidden" name="post_id" value="<?php echo $postagem['id']; ?>">
                             <div class="form-floating mb-2">
                                 <input type="text" class="form-control" name="alimento" id="alimento"
@@ -326,7 +341,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                                     <label for="quantidade" class="adjust">Quantidade</label>
                                 </div>
                                 <div class="form-floating mb-2 col-lg-6">
-                                    <label for="unidade_medida" class="m-1 p-3" id="lb-select">Unidade de Medida</label>
+                                    <label for="unidade_medida" class="m-1 p-3 d-none" id="lb-select">Unidade de Medida</label
                                     <select class="form-select" name="unidade_medida" id="unidade_medida"
                                         aria-label="Unidade de Medida" required>
                                         <option value="Kg" <?php echo ($postagem['unidade_medida'] == 'Kg') ? 'selected' : ''; ?>>
@@ -352,21 +367,33 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                                     maxlength="100"><?php echo $postagem['observacoes']; ?></textarea>
                                 <legend class="p-1"><i>Máximo de 100 caracteres</i></legend>
                             </div>
-                            <button type="submit" class="btn btn-primary">Salvar Edições</button>
-                        </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Edições</button>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../js/CRUD_user.js"></script>
     <script src="../../js/logout.js"></script>
+    <script>
+        const campo_tipo = document.querySelector("#unidade_medida");
+        const lb_select = document.querySelector("#lb-select");
+
+
+        campo_tipo.addEventListener('change', 
+        function(event) {
+            if(campo_tipo.value==''){
+                lb_select.style.display = "block";
+            }else{
+                lb_select.style.display = "none";
+            }
+        });
+    </script>
 </body>
 <footer class="p-2 text-center text-white">
     <p>Desenvolvido por Gabriel Batista e Dalmo Scalon - Universidade Federal de Uberlândia</p>

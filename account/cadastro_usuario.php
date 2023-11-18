@@ -3,94 +3,54 @@ include "UsuarioEntidade.php";
 session_start();
 require "../conexao.php";
 
-// Verifica o logout antes de verificar a sessão
-if (isset($_POST["logout"])) {
-    // Destrói a sessão
-    session_destroy();
-
-    // Redireciona para a página de login
-    header("Location: ../login.php");
-    exit();
-}
-
-// Cria uma instância de conexão apenas se não existir
-if (!isset($conn)) {
-    $conn = new Conexao();
-    $conn->conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Dados de conexão com o banco de dados (já definidos no arquivo conexao.php)
     try {
+        $conn = new Conexao(); // Cria a instância de conexão usando as credenciais do arquivo "conexao.php"
+        // Defina o modo de erro para exceção
+        $conn->conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Restante do código permanece o mesmo
         // Coletar dados do formulário, hash da senha, preparar a consulta e executar a consulta
         $nome = $_POST["nome"];
         $email = $_POST["email"];
         $senha = $_POST["senha"];
-        $tipo_conta_ = $_POST["tipo_conta"];
+        $tipo_conta = $_POST["tipo_conta"];
         $telefone = $_POST["telefone"];
         $site = $_POST["site"];
 
         // Hash da senha usando bcrypt
         $senhaCriptografada = password_hash($senha, PASSWORD_BCRYPT);
 
-        // Preparar a consulta SQL
-        $stmt = $conn->conexao->prepare("INSERT INTO usuarios (nome, email, senha, tipo_conta, telefone, site) VALUES (?, ?, ?, ?, ?, ?)");
+        // Verificar se foi feito o upload da foto
+        if ($_FILES['foto_perfil']['error'] == UPLOAD_ERR_OK) {
+            $foto_perfil_nome = $_FILES['foto_perfil']['name'];
+            $foto_perfil_tipo = $_FILES['foto_perfil']['type'];
+            $foto_perfil_dados = file_get_contents($_FILES['foto_perfil']['tmp_name']);
+        } else {
+            // Se não houver upload, usar a foto padrão
+            $foto_perfil_nome = "user.png";
+            $foto_perfil_tipo = "image/png";
+            $foto_perfil_dados = file_get_contents("imagens/user.png"); // Substitua pelo caminho correto
+        }
+
+        // Inserir dados do usuário e a foto de perfil no banco de dados
+        $stmt = $conn->conexao->prepare("INSERT INTO usuarios (nome, email, senha, tipo_conta, telefone, site, foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bindParam(1, $nome);
         $stmt->bindParam(2, $email);
         $stmt->bindParam(3, $senhaCriptografada);
-        $stmt->bindParam(4, $tipo_conta_);
+        $stmt->bindParam(4, $tipo_conta);
         $stmt->bindParam(5, $telefone);
         $stmt->bindParam(6, $site);
+        $stmt->bindParam(7, $foto_perfil_nome);
+        $stmt->bindParam(8, $foto_perfil_tipo);
+        $stmt->bindParam(9, $foto_perfil_dados, PDO::PARAM_LOB);
 
+        // Executar a consulta
         $stmt->execute();
     } catch (PDOException $e) {
         echo "Erro ao cadastrar usuário: " . $e->getMessage();
     }
-}
-
-// Verificar sessão após tratar o formulário
-if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
-    header("Location: ../login.php");
-    exit();
-}else {
-    // Restante do código relacionado à sessão...
-    //* Consulta o ID do usuário no banco de dados
-    $sql = "SELECT id, tipo_conta FROM usuarios WHERE email = ? AND nome = ?";
-    $stmt = $conn->conexao->prepare($sql);
-    $usuario = $_SESSION["usuario"];
-// Verifica se $usuario é uma instância válida de UsuarioEntidade
-if ($usuario instanceof UsuarioEntidade) {
-    // Tente executar as linhas problemáticas e capture qualquer exceção
-    try {
-        $stmt->bindParam(1, $usuario->getEmail());
-        $stmt->bindParam(2, $usuario->getNome());
-
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Define o ID do usuário na variável de sessão
-        $usuario->setId($result['id']);
-
-        // Obtém o tipo de conta
-        $tipoConta = $result['tipo_conta'];
-    } catch (PDOException $e) {
-        // Imprima mensagens de erro personalizadas
-        echo "Erro ao definir parâmetros: " . $e->getMessage();
-    }
-} else {
-    // Lida com o caso em que $usuario não é uma instância válida
-    echo "Erro: Objeto de usuário inválido.";
-}
-
-    //$stmt->bindParam(1, $usuario->getEmail());
-    //$stmt->bindParam(2, $usuario->getNome());
-    //$stmt->execute();
-    //$result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Define o ID do usuário na variável de sessão
-    //$usuario->setId($result['id']);
-
-    // Obtém o tipo de conta
-    //$tipoConta = $result['tipo_conta'];
 }
 ?>
 
@@ -103,6 +63,7 @@ if ($usuario instanceof UsuarioEntidade) {
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
     <!-- Estilos CSS personalizados -->
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/cadastro.css">
@@ -136,7 +97,22 @@ if ($usuario instanceof UsuarioEntidade) {
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <?php
+                    $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
+                    // Não inclui o administrador 
+                    $stmt = $conn->conexao->prepare($sql); 
+                    $stmt->bindParam(1, $usuario->getId());
+                    $stmt->execute();
+                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                // Verificar se o usuário tem uma foto de perfil no banco
+                        if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                            $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                            echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                        } else {
+                            // Caso contrário, exibir a imagem padrão
+                            echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                        }
+                ?>
                     </a>
                 </div>
             </div>
@@ -149,7 +125,16 @@ if ($usuario instanceof UsuarioEntidade) {
     <aside>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-                <img src="../imagens/user.png" class="rounded-circle" width="50" height="50">
+                <?php
+                // Verificar se o usuário tem uma foto de perfil no banco
+                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                } else {
+                        // Caso contrário, exibir a imagem padrão
+                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                }
+            ?>
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
@@ -286,6 +271,15 @@ if ($usuario instanceof UsuarioEntidade) {
     <!-- Código JavaScript -->
 </body>
 <script src="../js/cadastro.js"></script>
+<script>
+        $(document).ready(function(){
+                // Aplica a máscara de telefone ao campo de entrada
+                $('#tel').inputmask({
+                    mask: ['(99) 9999-9999', '(99) 99999-9999'],
+                    keepStatic: true
+                });
+    });
+    </script>
 <footer class="p-2 text-center text-white">
     <p>Desenvolvido por Gabriel Batista e Dalmo Scalon - Universidade Federal de Uberlândia</p>
 </footer>

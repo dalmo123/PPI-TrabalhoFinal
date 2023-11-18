@@ -1,6 +1,6 @@
 <?php
 // Arquivo exclude.php
-require_once "../conexao.php";
+require_once "../../conexao.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtém o ID do perfil a ser excluído
