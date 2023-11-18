@@ -255,18 +255,6 @@
     <!-- Terceira sessão: Cards -->
     <div class="container mt-5 mb-5">
         <div class="row">
-<<<<<<< Updated upstream
-            <div class="col-lg-4">
-                <div class="card mb-4">
-                    <div class="card-body mb-5">
-                        <h5 class="card-title">Cadastro</h5>
-                        <p class="card-text">Cadastre-se no sistema SALVAR.</p>
-                        <a href="cadastro_usuario.php" class="btn btn-primary">Cadastrar</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-=======
             <?php
                 if ($tipoConta != 'Fornecedor' && $tipoConta != 'ONG' && $usuario->getId() == "1") {
                     echo '<div class="col-lg">';
@@ -281,7 +269,6 @@
                 }
             ?>
             <div class="col-lg">
->>>>>>> Stashed changes
                 <div class="card mb-4">
                     <div class="card-body mb-5">
                         <h5 class="card-title">Listagem</h5>
