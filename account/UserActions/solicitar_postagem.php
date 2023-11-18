@@ -72,8 +72,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>SALVAR | Sistema de Apoio à Luta contra Vulnerabilidade Alimentar e Recursos</title>
     <meta charset="utf-8">
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <!-- Estilos CSS personalizados -->
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/solicitarPostagem.css">
@@ -85,8 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
             <!-- Logo à direita -->
-            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png" class="img-fluid"
-                    width="200"></a>
+            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png"
+                    class="img-fluid" width="200"></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -131,12 +134,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- Menu offcanvas lateral -->
     <aside>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample"
+            aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-<<<<<<< Updated upstream
-                <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
-                <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome()?></h5>
-=======
                 <?php
                     // Verificar se o usuário tem uma foto de perfil no banco
                     if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
@@ -150,22 +150,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel">
                     <?php echo $usuario->getNome() ?>
                 </h5>
->>>>>>> Stashed changes
+
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
             <div class="offcanvas-body">
                 <ul>
                     <li><a href="solicitar_postagem.php">Solicitar Postagem</a></li>
-                    <li><a href="gerenciar_postagens.php">Gerenciar Postagens</a</li>
+                    <li><a href="gerenciar_postagens.php">Gerenciar Postagens</a< /li>
                     <li><a href="editar_perfil.php">Editar perfil</a></li>
                     <li><a href="excluir_perfil.php">Excluir Perfil</a></li>
                     <li class="separator">
                         <button type="button" class="btn btn-outline-primary w-100 mt-3" data-bs-toggle="modal"
                             data-bs-target="#confirmExitModal">Sair
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                                <path fill-rule="evenodd"
+                                    d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
                             </svg>
                         </button>
                     </li>
@@ -201,17 +204,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <form id="loginForm" action="" method="POST">
             <div class="form-floating mb-2">
-                <input type="text" class="form-control" id="floatingInput1" placeholder="Alimento" name="alimento" required>
+                <input type="text" class="form-control" id="floatingInput1" placeholder="Alimento" name="alimento"
+                    required>
                 <label for="floatingInput1">Alimento (Arroz, feijao, etc..)</label>
             </div>
             <div class="row">
                 <div class="form-floating mb-2 col-lg-6">
-                    <input type="number" class="form-control bg-transparent" id="floatingInput2" name="quantidade" placeholder="Quantidade" required>
+                    <input type="number" class="form-control bg-transparent" id="floatingInput2" name="quantidade"
+                        placeholder="Quantidade" required>
                     <label for="floatingInput2" class="adjust">Quantidade</label>
                 </div>
                 <div class="form-floating mb-2 col-lg-6">
                     <label for="select" class="m-1 p-3" id="lb-select">Unidade de Medida</label>
-                    <select class="form-select" id="select" aria-label="Unidade de Medida" name="unidade_medida" required>
+                    <select class="form-select" id="select" aria-label="Unidade de Medida" name="unidade_medida"
+                        required>
                         <option selected value="" aria-placeholder="Unidade de Medida"></option>
                         <option value="Kg">Kg</option>
                         <option value="g">g</option>
@@ -219,16 +225,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <option value="ml">ml</option>
                     </select>
                 </div>
-            </div>      
+            </div>
             <div class="form-floating mb-2">
-                <input type="date" class="form-control" id="floatingInput3" placeholder="Data de Validade" name="data_validade" required>
+                <input type="date" class="form-control" id="floatingInput3" placeholder="Data de Validade"
+                    name="data_validade" required>
                 <label for="floatingInput3">Data de Validade</label>
             </div>
             <div class="form-floating mb-2 input-group">
                 <span class="input-group-text">Observações</span>
-                <textarea class="form-control" aria-label="Observações" rows="3" maxlength="100" id="text-area" name="observacoes"></textarea>
+                <textarea class="form-control" aria-label="Observações" rows="3" maxlength="100" id="text-area"
+                    name="observacoes"></textarea>
                 <legend class="p-1"><i>Máximo de 100 caracteres</i></legend>
-              </div>
+            </div>
             <button type="submit" class="btn btn-primary mt-3 total-btn">Solicitar Postagem</button>
         </form>
 

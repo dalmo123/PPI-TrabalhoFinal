@@ -9,6 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $observacoes = $_POST["observacoes"];
 
     require_once "../../conexao.php";
+
     $conn = new Conexao();
 
     // Atualizar o registro no banco de dados
@@ -31,3 +32,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+

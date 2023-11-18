@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
             <!-- Logo à direita -->
-            <a class="navbar-brand" href="index_admin.php"><img src="../imagens/Logo_transp.png" class="img-fluid"
+            <a class="navbar-brand" href="index_account.php"><img src="../imagens/Logo_transp.png" class="img-fluid"
                     width="200"></a>
 
             <!-- Links à esquerda -->

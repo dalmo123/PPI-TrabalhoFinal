@@ -15,7 +15,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     header("Location: ../../login.php");
 } else {
     $usuario = $_SESSION["usuario"];
-    
+
     // Consulta o ID do usuário no banco de dados
     require_once "../../conexao.php";
     $conn = new Conexao();
@@ -29,7 +29,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     $idUsuario = $result['id'];
 
     // Consulta as postagens aprovadas
-    $sqlAprovadas = "SELECT * FROM postagens WHERE id_usuario = ? AND status = 'aprovado'";
+    $sqlAprovadas = "SELECT * FROM postagens WHERE id_usuario = ? AND status = 'aprovada'";
     // Após a execução da consulta
     $stmtAprovadas = $conn->conexao->prepare($sqlAprovadas);
     $stmtAprovadas->bindParam(1, $idUsuario);
@@ -43,9 +43,11 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     $stmtEmEspera->execute();
     $postagensEmEspera = $stmtEmEspera->fetchAll(PDO::FETCH_ASSOC);
 }
-    
 
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html>
@@ -65,14 +67,15 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     <link rel="stylesheet" href="../../css/offCanvas.css">
     <link rel="stylesheet" href="../../css/gerencia.css">
     <link rel="icon" type="image/x-icon" href="../../imagens/brand.png">
+
 </head>
 <header>
     <!-- Barra de Navegação -->
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
             <!-- Logo à direita -->
-            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png" class="img-fluid"
-                    width="200"></a>
+            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png"
+                    class="img-fluid" width="200"></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -137,7 +140,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
             <div class="offcanvas-body">
                 <ul>
                     <li><a href="solicitar_postagem.php">Solicitar Postagem</a></li>
-                    <li><a href="gerenciar_postagens.php">Gerenciar Postagens</a</li>
+                    <li><a href="gerenciar_postagens.php">Gerenciar Postagens</a< /li>
                     <li><a href="editar_perfil.php">Editar perfil</a></li>
                     <li><a href="excluir_perfil.php">Excluir Perfil</a></li>
                     <li class="separator">
@@ -190,86 +193,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                 </svg>
             </span>
         </div>
-<<<<<<< Updated upstream
-        <h3 class="mb-4" id="h3-1">Postagens Aprovadas</h3>
-        <div class="table-responsive">
-            <table class="table table-striped table-bordless mt-3" id="table">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">Alimento</th>
-                        <th scope="col">Quantidade</th>
-                        <th scope="col">Observações</th>
-                        <th scope="col">Data de Validade</th>
-                        <th scope="col">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($postagensAprovadas as $postagem): ?>
-                            <tr>
-                                <td>
-                                    <?php echo $postagem['alimento']; ?>
-                                </td>
-                                <td>
-                                    <?php echo $postagem['quantidade'] . ' ' . $postagem['unidade_medida']; ?>
-                                </td>
-                                <td>
-                                    <?php echo $postagem['observacoes']; ?>
-                                </td>
-                                <td>
-                                    <?php echo $postagem['data_validade']; ?>
-                                </td>
-                                <td>
-                                    <!-- Adicione os botões de ação conforme necessário -->
-                                    <button class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Excluir Postagem</button>
-                                    <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#editModal">Editar Postagem</button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
 
-        <!-- Código HTML para exibir as postagens em espera -->
-        <h3 class="mb-4" id="h3-2">Postagens em Espera</h3>
-        <div class="table-responsive">
-            <table class="table table-striped table-bordless mt-3" id="table2">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">Alimento</th>
-                        <th scope="col">Quantidade</th>
-                        <th scope="col">Observações</th>
-                        <th scope="col">Data de Validade</th>
-                        <th scope="col">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($postagensEmEspera as $postagem): ?>
-                            <tr>
-                                <td>
-                                    <?php echo $postagem['alimento']; ?>
-                                </td>
-                                <td>
-                                    <?php echo $postagem['quantidade'] . ' ' . $postagem['unidade_medida']; ?>
-                                </td>
-                                <td>
-                                    <?php echo $postagem['observacoes']; ?>
-                                </td>
-                                <td>
-                                    <?php echo $postagem['data_validade']; ?>
-                                </td>
-                                <td>
-                                    <!-- Adicione os botões de ação conforme necessário -->
-                                    <button class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Excluir Postagem</button>
-                                    <button class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#editModal">Editar Postagem</button>
-                                </td>
-                               
-                            </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-
-        </div>
-=======
         <?php
         if (empty($postagensAprovadas) && empty($postagensEmEspera)) {
             echo '<h3 class="mb-4" id="h3-3">Não foram encontradas postagens vinculadas ao seu perfil.</h3>';
@@ -347,7 +271,6 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
             }
         }
         ?>
->>>>>>> Stashed changes
 
         <!-- Modal de confirmação de saída -->
         <div class="modal fade" id="confirmExitModal" tabindex="-1" aria-labelledby="confirmExitModalLabel"
@@ -371,6 +294,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
             </div>
         </div>
 
+        <!-- Modal de confirmação de deleção de postagem -->
         <div class="modal fade" id="confirmDeleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
             aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -385,48 +309,39 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" id="confirmDelete" class="btn btn-primary">Excluir</button>
+                        <button class="btn btn-danger m-1 delete-post" data-bs-toggle="modal"
+                            data-bs-target="#confirmDeleteModal" data-id="<?php echo $postagem['id']; ?>">Excluir
+                            Postagem</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <!-- Modal de confirmação de edite -->
+        <div class="modal fade" id="editModal_<?php echo $postagem['id']; ?>" tabindex="-1"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Solicitar Edição de Postagem</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Postagem</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="editar_postagem.php" method="POST">
                     <div class="modal-body">
-<<<<<<< Updated upstream
-                        <form action="" method="POST">
-=======
                             <input type="hidden" name="post_id" value="<?php echo $postagem['id']; ?>">
->>>>>>> Stashed changes
                             <div class="form-floating mb-2">
-                                <input type="text" class="form-control" id="floatingInput1" placeholder="Alimento"
-                                    required>
-                                <label for="floatingInput1">Alimento (Arroz, feijao, etc..)</label>
+                                <input type="text" class="form-control" name="alimento" id="alimento"
+                                    value="<?php echo $postagem['alimento']; ?>" required>
+                                <label for="alimento">Alimento (Arroz, feijão, etc..)</label>
                             </div>
                             <div class="row">
                                 <div class="form-floating mb-2 col-lg-6">
-                                    <input type="number" class="form-control bg-transparent" id="floatingInput2"
-                                        placeholder="Quantidade" required>
-                                    <label for="floatingInput2" class="adjust">Quantidade</label>
+                                    <input type="number" class="form-control bg-transparent" name="quantidade"
+                                        id="quantidade" value="<?php echo $postagem['quantidade']; ?>" required>
+                                    <label for="quantidade" class="adjust">Quantidade</label>
                                 </div>
                                 <div class="form-floating mb-2 col-lg-6">
-<<<<<<< Updated upstream
-                                    <label for="select" class="m-1 p-3" id="lb-select">Unidade de Medida</label>
-                                    <select class="form-select" id="select" aria-label="Tipo de Conta" required>
-                                        <option selected value="" aria-placeholder="Unidade de Medida"></option>
-                                        <option value="Kg">Kg</option>
-                                        <option value="g">g</option>
-                                        <option value="L">L</option>
-                                        <option value="ml">ml</option>
-=======
-                                    <label for="unidade_medida" class="m-1 p-3 d-none" id="lb-select">Unidade de Medida</label>
+                                    <label for="unidade_medida" class="m-1 p-3 d-none" id="lb-select">Unidade de Medida</label
                                     <select class="form-select" name="unidade_medida" id="unidade_medida"
                                         aria-label="Unidade de Medida" required>
                                         <option value="Kg" <?php echo ($postagem['unidade_medida'] == 'Kg') ? 'selected' : ''; ?>>
@@ -437,43 +352,31 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
                                             L</option>
                                         <option value="ml" <?php echo ($postagem['unidade_medida'] == 'ml') ? 'selected' : ''; ?>>
                                             ml</option>
->>>>>>> Stashed changes
                                     </select>
                                 </div>
                             </div>
                             <div class="form-floating mb-2">
-                                <input type="date" class="form-control" id="floatingInput3"
-                                    placeholder="Data de Validade" required>
-                                <label for="floatingInput3">Data de Validade</label>
+                                <input type="date" class="form-control" name="data_validade" id="data_validade"
+                                    value="<?php echo $postagem['data_validade']; ?>" required>
+                                <label for="data_validade">Data de Validade</label>
                             </div>
                             <div class="form-floating mb-2 input-group">
                                 <span class="input-group-text">Observações</span>
-                                <textarea class="form-control" aria-label="Observações" rows="3" maxlength="100"
-                                    id="text-area"></textarea>
+                                <textarea class="form-control" name="observacoes" id="observacoes"
+                                    aria-label="Observações" rows="3"
+                                    maxlength="100"><?php echo $postagem['observacoes']; ?></textarea>
                                 <legend class="p-1"><i>Máximo de 100 caracteres</i></legend>
                             </div>
-<<<<<<< Updated upstream
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-primary">Enviar</button>
-=======
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                         <button type="submit" class="btn btn-primary">Salvar Edições</button>
->>>>>>> Stashed changes
                     </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-<<<<<<< Updated upstream
-    <script src="../js/CRUD_user.js"></script>
-    <script src="../js/logout.js"></script>
-=======
     </div>
     <script src="../../js/CRUD_user.js"></script>
     <script src="../../js/logout.js"></script>
@@ -491,11 +394,9 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
             }
         });
     </script>
->>>>>>> Stashed changes
 </body>
 <footer class="p-2 text-center text-white">
     <p>Desenvolvido por Gabriel Batista e Dalmo Scalon - Universidade Federal de Uberlândia</p>
 </footer>
-
 
 </html>

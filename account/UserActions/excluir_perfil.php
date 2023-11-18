@@ -17,17 +17,9 @@ if (isset($_POST["logout"])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirmExclusion"])) {
     // Se o formulário de confirmação foi enviado
-<<<<<<< Updated upstream
-    require_once "../conexao.php";
-    
-    $usuario = $_SESSION["usuario"];
-    $conn = new Conexao();
-    
-=======
 
     $usuario = $_SESSION["usuario"];
 
->>>>>>> Stashed changes
     // Excluir a tupla do banco de dados
     $sql = "DELETE FROM usuarios WHERE id = ?";
     $stmt = $conn->conexao->prepare($sql);
@@ -51,8 +43,11 @@ $usuario = $_SESSION["usuario"];
     <title>SALVAR | Exclusão de Perfil</title>
     <meta charset="utf-8">
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/offCanvas.css">
     <link rel="stylesheet" href="../../css/delete.css">
@@ -63,8 +58,8 @@ $usuario = $_SESSION["usuario"];
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
             <!-- Logo à direita -->
-            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png" class="img-fluid"
-                    width="200"></a>
+            <a class="navbar-brand" href="../index_account.php"><img src="../../imagens/Logo_transp.png"
+                    class="img-fluid" width="200"></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -109,13 +104,10 @@ $usuario = $_SESSION["usuario"];
 
     <!-- Menu offcanvas lateral -->
     <aside>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample"
+            aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-<<<<<<< Updated upstream
-                <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
-                <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
-=======
-                <?php
+                 <?php
                     // Verificar se o usuário tem uma foto de perfil no banco
                     if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
                         $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
@@ -128,22 +120,24 @@ $usuario = $_SESSION["usuario"];
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel">
                     <?php echo $usuario->getNome(); ?>
                 </h5>
->>>>>>> Stashed changes
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
             <div class="offcanvas-body">
                 <ul>
                     <li><a href="solicitar_postagem.php">Solicitar Postagem</a></li>
-                    <li><a href="gerenciar_postagens.php">Gerenciar Postagens</a</li>
+                    <li><a href="gerenciar_postagens.php">Gerenciar Postagens</a< /li>
                     <li><a href="editar_perfil.php">Editar perfil</a></li>
                     <li><a href="excluir_perfil.php">Excluir Perfil</a></li>
                     <li class="separator">
                         <button type="button" class="btn btn-outline-primary w-100 mt-3" data-bs-toggle="modal"
                             data-bs-target="#confirmExitModal">Sair
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                                <path fill-rule="evenodd"
+                                    d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
                             </svg>
                         </button>
                     </li>
@@ -175,11 +169,7 @@ $usuario = $_SESSION["usuario"];
     <div class="container mt-5">
         <h1 class="text-white">Exclusão de Perfil</h1>
         <div class="text-center">
-<<<<<<< Updated upstream
-            <img src="../../imagens/user.png" class="img-fluid rounded-circle text-center" width="160" height="160" alt="">
-            <h3 class="text-center mt-4"><?php echo $usuario->getNome();?></h3>
-=======
-            <?php
+        <?php
                 // Verificar se o usuário tem uma foto de perfil no banco
                 if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
                     $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
@@ -192,15 +182,14 @@ $usuario = $_SESSION["usuario"];
             <h3 class="text-center mt-4">
                 <?php echo $usuario->getNome(); ?>
             </h3>
->>>>>>> Stashed changes
         </div>
         <p class="text-center"> Este perfil será excluído permanentemente. Deseja prosseguir com a operação de exclusão?
         </p>
         <div class="prosseguir text-center mt-4">
             <button class="btn btn-primary prosseguir" data-bs-toggle="modal"
-            data-bs-target="#staticBackdrop">Prosseguir</button>
+                data-bs-target="#staticBackdrop">Prosseguir</button>
         </div>
-        
+
         <!-- Button trigger modal -->
         <!-- Modal -->
 
@@ -219,7 +208,8 @@ $usuario = $_SESSION["usuario"];
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <form action="" method="post">
-                            <button type="submit" class="btn btn-primary" name="logout" id="confirmExitButton">Sair</button>
+                            <button type="submit" class="btn btn-primary" name="logout"
+                                id="confirmExitButton">Sair</button>
                         </form>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 <?php
 require_once "../../conexao.php";
 
+
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["post_id"])) {
     $post_id = $_POST["post_id"];
 
@@ -20,4 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["post_id"])) {
     // ID da postagem não fornecido ou método de requisição inválido
     echo "ID da postagem não fornecido ou método de requisição inválido.";
 }
+
 ?>
+
