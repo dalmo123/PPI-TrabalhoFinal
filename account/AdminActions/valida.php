@@ -18,7 +18,7 @@
     else {
         $usuario = $_SESSION["usuario"];
         // Consulta o ID do usuário no banco de dados
-        require_once "../conexao.php";
+        require_once "../../conexao.php";
         $conn = new Conexao();
         $sql = "SELECT id, tipo_conta FROM usuarios WHERE email = ? AND nome = ?"; // Supondo que você tenha uma coluna 'tipo_conta' na sua tabela de usuários
         $stmt = $conn->conexao->prepare($sql);
@@ -84,7 +84,22 @@
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <?php
+                            $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
+                            // Não inclui o administrador 
+                            $stmt = $conn->conexao->prepare($sql); 
+                            $stmt->bindParam(1, $usuario->getId());
+                            $stmt->execute();
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        // Verificar se o usuário tem uma foto de perfil no banco
+                                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                } else {
+                                    // Caso contrário, exibir a imagem padrão
+                                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                }
+                        ?>
                     </a>
                 </div>
             </div>
@@ -97,7 +112,16 @@
     <aside>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-                <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                <?php
+                    // Verificar se o usuário tem uma foto de perfil no banco
+                    if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                        $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                        echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    } else {
+                            // Caso contrário, exibir a imagem padrão
+                        echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    }
+                ?>
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
@@ -190,63 +214,65 @@
                
                 $stmt_postagens = $conn->conexao->prepare($sql_postagens);
                 $stmt_postagens->execute();
-                $postagens = $stmt_postagens->fetchAll(PDO::FETCH_ASSOC);
+                if($stmt_postagens->rowCount() > 0){
+                    $postagens = $stmt_postagens->fetchAll(PDO::FETCH_ASSOC);
 
-                echo '<div class="accordion-item">';
-                echo '<h2 class="accordion-header">';
-                echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#perfil_' . $id_perfil . '" aria-expanded="true" aria-controls="perfil_' . $id_perfil . '">';
-                echo '<img src="../../imagens/user.png" class="img-fluid rounded-circle" width="80" alt="">';
-                echo '<span class="name p-3">' . $nome_perfil . ' - ' . $tipo_conta_perfil . '</span>';
-                echo '</button>';
-                echo '</h2>';
-                echo '<div id="perfil_' . $id_perfil . '" class="accordion-collapse collapse show">';
-                echo '<div id="perfil-container-' . $id_perfil . '" class="accordion-body">';
-                echo '<div class="accordion-body">';
-                            // Seu código PHP existente ...
+                    echo '<div class="accordion-item">';
+                    echo '<h2 class="accordion-header">';
+                    echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#perfil_' . $id_perfil . '" aria-expanded="true" aria-controls="perfil_' . $id_perfil . '">';
+                    echo '<img src="../../imagens/user.png" class="img-fluid rounded-circle" width="80" alt="">';
+                    echo '<span class="name p-3">' . $nome_perfil . ' - ' . $tipo_conta_perfil . '</span>';
+                    echo '</button>';
+                    echo '</h2>';
+                    echo '<div id="perfil_' . $id_perfil . '" class="accordion-collapse collapse show">';
+                    echo '<div id="perfil-container-' . $id_perfil . '" class="accordion-body">';
+                    echo '<div class="accordion-body">';
+                                // Seu código PHP existente ...
 
-                            echo '<h3 class="mb-4">Postagens em Espera</h3>';
-                            echo '<div class="table-responsive">';
-                            echo '<table class="table table-striped table-bordless mt-3" id="table1">';
-                            echo '<thead class="table-dark">';
-                            echo '<tr>';
-                            echo '<th scope="col" class="text-center">Alimento</th>';
-                            echo '<th scope="col" class="text-center">Quantidade</th>';
-                            echo '<th scope="col" class="text-center">Observações</th>';
-                            echo '<th scope="col" class="text-center">Data de Validade</th>';
-                            echo '<th scope="col" class="text-center">Ações</th>';
-                            echo '</tr>';
-                            echo '</thead>';
-                            echo '<tbody>';
-
-                            foreach($postagens as $postagem){
-                                $alimento = $postagem['alimento'];
-                                $qtd = $postagem['quantidade'] . $postagem['unidade_medida'];
-                                $obs = $postagem['observacoes'];
-                                $data = $postagem['data_validade'];
-
+                                echo '<h3 class="mb-4">Postagens em Espera</h3>';
+                                echo '<div class="table-responsive">';
+                                echo '<table class="table table-striped table-bordless mt-3" id="table1">';
+                                echo '<thead class="table-dark">';
                                 echo '<tr>';
-                                echo '<td class="text-center">'. $alimento .'</td>';
-                                echo '<td class="text-center">'. $qtd .'</td>';
-                                echo '<td class="text-center">'. $obs .'</td>';
-                                echo '<td class="text-center">'. $data .'</td>';
-                                echo '<td class="text-center">';
-                                echo '<button class="btn btn-danger m-1 btn-rejeitar" data-bs-target="#staticBackdrop" data-id="' . $postagem['id'] . '">Rejeitar Postagem</button>';
-
-                                echo '<button class="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#confirmAcceptModal" data-bs-whatever="@profile" data-id="' . $postagem['id'] . '">Publicar Postagem</button>';
-                                echo '</td>';
+                                echo '<th scope="col" class="text-center">Alimento</th>';
+                                echo '<th scope="col" class="text-center">Quantidade</th>';
+                                echo '<th scope="col" class="text-center">Observações</th>';
+                                echo '<th scope="col" class="text-center">Data de Validade</th>';
+                                echo '<th scope="col" class="text-center">Ações</th>';
                                 echo '</tr>';
-                            }
+                                echo '</thead>';
+                                echo '<tbody>';
 
-                            echo '</tbody>';
-                            echo '</table>';
-                            echo '</div>';
+                                foreach($postagens as $postagem){
+                                    $alimento = $postagem['alimento'];
+                                    $qtd = $postagem['quantidade'] . $postagem['unidade_medida'];
+                                    $obs = $postagem['observacoes'];
+                                    $data = $postagem['data_validade'];
 
-                            // Seu código PHP existente ...
-                        
-                echo '</div>';
-                echo '</div>';
-                echo '</div>';
-                echo '</div>';
+                                    echo '<tr>';
+                                    echo '<td class="text-center">'. $alimento .'</td>';
+                                    echo '<td class="text-center">'. $qtd .'</td>';
+                                    echo '<td class="text-center">'. $obs .'</td>';
+                                    echo '<td class="text-center">'. $data .'</td>';
+                                    echo '<td class="text-center">';
+                                    echo '<button class="btn btn-danger m-1 btn-rejeitar" data-bs-target="#staticBackdrop" data-id="' . $postagem['id'] . '">Rejeitar Postagem</button>';
+
+                                    echo '<button class="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#confirmAcceptModal" data-bs-whatever="@profile" data-id="' . $postagem['id'] . '">Publicar Postagem</button>';
+                                    echo '</td>';
+                                    echo '</tr>';
+                                }
+
+                                echo '</tbody>';
+                                echo '</table>';
+                                echo '</div>';
+
+                                // Seu código PHP existente ...
+                            
+                    echo '</div>';
+                    echo '</div>';
+                    echo '</div>';
+                    echo '</div>';
+                }
             }
             ?>
         </div>

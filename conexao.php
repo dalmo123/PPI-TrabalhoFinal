@@ -11,6 +11,7 @@ class Conexao {
         if (!isset($this->conexao)) {
             try {
                 $this->conexao = new PDO("mysql:host=$this->servername;dbname=$this->dbname", $this->username, $this->password);
+                $this->conexao->exec("SET NAMES utf8");
             } catch (PDOException $e) {
                 echo 'Erro de conexão: ' . $e->getMessage();
             }

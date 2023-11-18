@@ -18,7 +18,7 @@
     else {
         $usuario = $_SESSION["usuario"];
         // Consulta o ID do usuário no banco de dados
-        require_once "../conexao.php";
+        require_once "../../conexao.php";
         $conn = new Conexao();
         $sql = "SELECT id, tipo_conta FROM usuarios WHERE email = ? AND nome = ?"; // Supondo que você tenha uma coluna 'tipo_conta' na sua tabela de usuários
         $stmt = $conn->conexao->prepare($sql);
@@ -43,6 +43,8 @@
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
     <!-- Estilos CSS personalizados (opcional) -->
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/gerencia.css">
@@ -75,7 +77,22 @@
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <?php
+                            $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
+                            // Não inclui o administrador 
+                            $stmt = $conn->conexao->prepare($sql); 
+                            $stmt->bindParam(1, $usuario->getId());
+                            $stmt->execute();
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        // Verificar se o usuário tem uma foto de perfil no banco
+                                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                } else {
+                                    // Caso contrário, exibir a imagem padrão
+                                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                }
+                        ?>
                     </a>
                 </div>
             </div>
@@ -88,7 +105,16 @@
     <aside>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-                <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                <?php
+                    // Verificar se o usuário tem uma foto de perfil no banco
+                    if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                        $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                        echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    } else {
+                            // Caso contrário, exibir a imagem padrão
+                        echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    }
+                ?>
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
@@ -191,7 +217,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="profilePicture" class="form-label">Foto de Perfil</label>
-                            <input type="file" class="form-control" id="profilePicture" name="foto_perfil" accept="image/*">
+                            <input type="file" class="form-control" id="foto_perfil" name="foto_perfil" accept="image/*">
                         </div>
                         <button type="button" class="btn btn-primary" id="uploadProfilePicture">Trocar Foto de Perfil</button>        
                 </div>
@@ -244,7 +270,14 @@
                 echo '<div class="accordion-item">';
                 echo '<h2 class="accordion-header">';
                 echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#perfil_' . $id_perfil . '" aria-expanded="true" aria-controls="perfil_' . $id_perfil . '">';
-                echo '<img src="../../imagens/user.png" class="img-fluid rounded-circle" width="80" alt="">';
+                // Verificar se o usuário tem uma foto de perfil no banco
+                        if ($perfil['foto_perfil_nome'] && $perfil['foto_perfil_tipo'] && $perfil['foto_perfil_dados']) {
+                            $foto_perfil_src = "data:" . $perfil['foto_perfil_tipo'] . ";base64," . base64_encode($perfil['foto_perfil_dados']);
+                            echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='80' height='80' alt=''>";
+                        } else {
+                            // Caso contrário, exibir a imagem padrão
+                            echo "<img src='imagens/user.png' class='img-fluid rounded-circle' width='80' height='80' alt=''>";
+                        }
                 echo '<span class="name p-3">' . $nome_perfil . ' - ' . $tipo_conta_perfil . '</span>';
                 echo '</button>';
                 echo '</h2>';
@@ -328,11 +361,12 @@
                 formData.append('name', nameInput.value);
                 formData.append('email', emailInput.value);
                 formData.append('tel', telInput.value);
+                formData.append('site', siteInput.value);
 
                 // Adicione a lógica para enviar a foto de perfil, se fornecida
-                const fileInput = document.getElementById('profilePicture');
+                const fileInput = document.getElementById('foto_perfil');
                 if (fileInput.files.length > 0) {
-                    formData.append('profilePicture', fileInput.files[0]);
+                    formData.append('foto_perfil', fileInput.files[0]);
                 }
 
                 // Enviar a solicitação AJAX ao servidor
@@ -344,6 +378,9 @@
                             alert('Alterações salvas com sucesso!');
                             // Recarregue a página ou execute outras ações necessárias
                             window.location.reload();
+                        } else if(xhr.status === 500) {
+                            // Exibição de mensagem de erro, se aplicável
+                            alert('Erro ao salvar as alterações. Tente novamente.');
                         } else {
                             // Exibição de mensagem de erro, se aplicável
                             alert('Erro ao salvar as alterações. Tente novamente.');
@@ -426,7 +463,15 @@
 
 </script>
 
-
+    <script>
+        $(document).ready(function(){
+            // Aplica a máscara de telefone ao campo de entrada
+            $('#tel').inputmask({
+                mask: ['(99) 9999-9999', '(99) 99999-9999'],
+                keepStatic: true
+            });
+        });
+    </script>
 
   <script src="../../js/CRUD_Adm.js"></script>
 </body>

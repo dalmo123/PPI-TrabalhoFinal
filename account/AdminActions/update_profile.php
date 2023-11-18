@@ -1,5 +1,5 @@
 <?php
-    require_once "../conexao.php";
+    require_once "../../conexao.php";
     session_start();
 
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -11,33 +11,44 @@
         }
 
         $userId = $_POST['id'];
+
+        $conn = new Conexao();
+        $user = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?";
+        $stmt1 = $conn->conexao->prepare($user);
+        $stmt1->bindParam(1, $userId);
+        $stmt1->execute();
+        $result =  $stmt1->fetch(PDO::FETCH_ASSOC);
+
+        
         $nome = isset($_POST["name"]) ? $_POST["name"] : null;
         $email = isset($_POST["email"]) ? $_POST["email"] : null;
         $telefone = isset($_POST["tel"]) ? $_POST["tel"] : null;
+        $site = isset($_POST["site"]) ? $_POST["site"] : null;
 
         // Verifique se o arquivo de foto de perfil foi enviado
-        if (isset($_FILES["profilePicture"]) && $_FILES["profilePicture"]["error"] === 0) {
-            $fotoPerfilNome = $_FILES["profilePicture"]["name"];
-            $fotoPerfilTipo = $_FILES["profilePicture"]["type"];
-            $fotoPerfilDados = file_get_contents($_FILES["profilePicture"]["tmp_name"]);
+        // Atualiza a foto de perfil, se fornecida
+        if (isset($_FILES["foto_perfil"]) && $_FILES["foto_perfil"]["error"] == 0) {
+            $foto_perfil_nome = $_FILES["foto_perfil"]["name"];
+            $foto_perfil_tipo = $_FILES["foto_perfil"]["type"];
+            $foto_perfil_dados = file_get_contents($_FILES["foto_perfil"]["tmp_name"]);
         } else {
-            // Se não fornecido, mantenha os dados atuais no banco
-            $fotoPerfilNome = null;
-            $fotoPerfilTipo = null;
-            $fotoPerfilDados = null;
+            // Se não fornecida, mantenha os dados atuais no banco
+            $foto_perfil_nome = $result['foto_perfil_nome'];
+            $foto_perfil_tipo = $result['foto_perfil_tipo'];
+            $foto_perfil_dados = $result['foto_perfil_dados'];
         }
 
         // Atualize os dados no banco de dados
-        $conn = new Conexao();
-        $sql = "UPDATE usuarios SET nome = ?, email = ?, telefone = ?, foto_perfil_nome = ?, foto_perfil_tipo = ?, foto_perfil_dados = ? WHERE id = ?";
+        $sql = "UPDATE usuarios SET nome = COALESCE(?, nome), email = COALESCE(?, email), telefone = COALESCE(?, telefone), site = COALESCE(?, site), foto_perfil_nome = COALESCE(?, foto_perfil_nome), foto_perfil_tipo = COALESCE(?, foto_perfil_tipo), foto_perfil_dados = COALESCE(?, foto_perfil_dados) WHERE id = ?";
         $stmt = $conn->conexao->prepare($sql);
         $stmt->bindParam(1, $nome);
         $stmt->bindParam(2, $email);
         $stmt->bindParam(3, $telefone);
-        $stmt->bindParam(4, $fotoPerfilNome);
-        $stmt->bindParam(5, $fotoPerfilTipo);
-        $stmt->bindParam(6, $fotoPerfilDados);
-        $stmt->bindParam(7, $userId);
+        $stmt->bindParam(4, $site);
+        $stmt->bindParam(5, $foto_perfil_nome);
+        $stmt->bindParam(6, $foto_perfil_tipo);
+        $stmt->bindParam(7, $foto_perfil_dados);
+        $stmt->bindParam(8, $userId);
 
         if ($stmt->execute()) {
             // Atualização bem-sucedida

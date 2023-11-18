@@ -11,14 +11,16 @@ if (isset($_POST["logout"])) {
     exit();
 }
 
+$result = null;
+
 if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     header("Location: ../../login.php");
 } else {
     $usuario = $_SESSION["usuario"];
     // Consulta o ID do usuário no banco de dados
-    require_once "../conexao.php";
+    require_once "../../conexao.php";
     $conn = new Conexao();
-    $sql = "SELECT id, email, site, tipo_conta, telefone, nome FROM usuarios WHERE email = ? AND nome = ?";
+    $sql = "SELECT id, email, site, tipo_conta, telefone, nome, foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE email = ? AND nome = ?";
     $stmt = $conn->conexao->prepare($sql);
     $stmt->bindParam(1, $usuario->getEmail());
     $stmt->bindParam(2, $usuario->getNome());
@@ -41,15 +43,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $site = !empty($_POST["site"]) ? $_POST["site"] : null;
 
     // Atualiza a foto de perfil, se fornecida
-    if (isset($_FILES["profilePicture"]) && $_FILES["profilePicture"]["error"] == 0) {
-        $foto_perfil_nome = $_FILES["profilePicture"]["name"];
-        $foto_perfil_tipo = $_FILES["profilePicture"]["type"];
-        $foto_perfil_dados = file_get_contents($_FILES["profilePicture"]["tmp_name"]);
+    if (isset($_FILES["foto_perfil"]) && $_FILES["foto_perfil"]["error"] == 0) {
+        $foto_perfil_nome = $_FILES["foto_perfil"]["name"];
+        $foto_perfil_tipo = $_FILES["foto_perfil"]["type"];
+        $foto_perfil_dados = file_get_contents($_FILES["foto_perfil"]["tmp_name"]);
     } else {
         // Se não fornecida, mantenha os dados atuais no banco
-        $foto_perfil_nome = null;
-        $foto_perfil_tipo = null;
-        $foto_perfil_dados = null;
+        $foto_perfil_nome = $result['foto_perfil_nome'];
+        $foto_perfil_tipo = $result['foto_perfil_tipo'];
+        $foto_perfil_dados = $result['foto_perfil_dados'];
     }
 
     // Atualiza os dados no banco apenas se não estiverem em branco
@@ -82,6 +84,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Arquivos CSS e JavaScript do Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
     <!-- Estilos CSS personalizados -->
 
     <link rel="stylesheet" href="../../css/style.css">
@@ -116,7 +120,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <?php
+                            $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
+                            // Não inclui o administrador 
+                            $stmt = $conn->conexao->prepare($sql); 
+                            $stmt->bindParam(1, $usuario->getId());
+                            $stmt->execute();
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        // Verificar se o usuário tem uma foto de perfil no banco
+                                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                } else {
+                                    // Caso contrário, exibir a imagem padrão
+                                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                }
+                        ?>
                     </a>
                 </div>
             </div>
@@ -129,7 +148,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <aside>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-                <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                <?php
+                    // Verificar se o usuário tem uma foto de perfil no banco
+                    if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                        $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                        echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    } else {
+                            // Caso contrário, exibir a imagem padrão
+                        echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    }
+                ?>
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
@@ -215,7 +243,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="mb-3">
                 <label for="profilePicture" class="form-label">Foto de Perfil</label>
-                <input type="file" class="form-control" id="profilePicture" accept="image/*">
+                <input type="file" class="form-control" id="foto_perfil" name="foto_perfil" accept="image/*">
             </div>
             <button type="button" class="btn btn-primary" id="uploadProfilePicture" name="profilePicture">Trocar Foto de Perfil</button>        
         
@@ -246,7 +274,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </div>
         </div>
-    <script src="../../js/cadastro.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const siteInput = document.getElementById('site');
@@ -277,6 +304,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php echo 'alert("'. $msg .'");'?>
             });
 
+    </script>
+    <script>
+        $(document).ready(function(){
+                // Aplica a máscara de telefone ao campo de entrada
+                $('#tel').inputmask({
+                    mask: ['(99) 9999-9999', '(99) 99999-9999'],
+                    keepStatic: true
+                });
+    });
     </script>
 </body>
 <footer class="p-2 text-center text-white">

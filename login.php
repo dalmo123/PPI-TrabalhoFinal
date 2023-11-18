@@ -143,7 +143,7 @@ if (isset($_POST["usuario"]) && isset($_POST["senha"])) {
             </div>
             <button type="submit" class="btn btn-primary mt-3 total-btn">Entrar</button>
             <div class="separator p-2">Primeiro Acesso? Cadastre-se.</div>
-            <button type="button" id="cadastroButton" class="btn btn-outline-primary mt-2 total-btn">Cadastrar</button>
+            <a href="cadastro_usuario.php"><button type="button" id="cadastroButton" class="btn btn-outline-primary mt-2 total-btn">Cadastrar</button></a>
         </form>
 
     </div>
@@ -151,7 +151,6 @@ if (isset($_POST["usuario"]) && isset($_POST["senha"])) {
     <!-- Código JavaScript -->
 
 </body>
-
 <footer class="p-2 text-center text-white">
     <p>Desenvolvido por Gabriel Batista e Dalmo Scalon - Universidade Federal de Uberlândia</p>
 </footer>

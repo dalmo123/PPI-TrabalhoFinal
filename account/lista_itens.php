@@ -48,6 +48,7 @@
     <!-- Estilos CSS personalizados -->
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/lista.css">
+    <link rel="stylesheet" href="../css/gerencia.css">
     <link rel="stylesheet" href="../css/offCanvas.css">
     <link rel="icon" type="image/x-icon" href="../imagens/brand.png">
 </head>
@@ -70,14 +71,33 @@
                     <li class="nav-item text-center">
                         <a class="nav-link" href="lista_itens.php">Lista de Usuários</a>
                     </li>
-                    <li class="nav-item text-center">
-                        <a class="nav-link" href="cadastro_usuario.php">Cadastro</a>
-                    </li>
+                    <?php
+                        if ($tipoConta != 'Fornecedor' && $tipoConta != 'ONG' && $usuario->getId() == "1") {
+                            echo '<li class="nav-item text-center">';
+                            echo    '<a class="nav-link" href="cadastro_usuario.php">Cadastro</a>';
+                            echo '</li>';
+                        }
+                    ?>
                 </ul>
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <?php
+                            $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
+                            // Não inclui o administrador 
+                            $stmt = $conn->conexao->prepare($sql); 
+                            $stmt->bindParam(1, $usuario->getId());
+                            $stmt->execute();
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        // Verificar se o usuário tem uma foto de perfil no banco
+                                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                } else {
+                                    // Caso contrário, exibir a imagem padrão
+                                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                }
+                        ?>
                     </a>
                 </div>
             </div>
@@ -90,7 +110,16 @@
     <aside>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
-                <img src="../imagens/user.png" class="rounded-circle" width="50" height="50">
+                <?php
+                    // Verificar se o usuário tem uma foto de perfil no banco
+                    if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                        $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                        echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    } else {
+                            // Caso contrário, exibir a imagem padrão
+                        echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    }
+                ?>
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
@@ -167,7 +196,6 @@
             </span>
         </div>
 
-
        <div class="accordion ip-group mb-5" id="accordionPanelsStayOpenExample">
     <?php
     $sql_usuarios = "SELECT * FROM usuarios WHERE id != 1";
@@ -180,13 +208,21 @@
         echo '<div class="accordion-item">';
         echo '<h2 class="accordion-header">';
         echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse' . $usuario['id'] . '" aria-expanded="false" aria-controls="panelsStayOpen-collapse' . $usuario['id'] . '">';
-        echo '<img src="../imagens/user.png" class="img-fluid rounded-circle" width="80" alt="">';
+        // Verificar se o usuário tem uma foto de perfil no banco
+                        if ($usuario['foto_perfil_nome'] && $usuario['foto_perfil_tipo'] && $usuario['foto_perfil_dados']) {
+                            $foto_perfil_src = "data:" . $usuario['foto_perfil_tipo'] . ";base64," . base64_encode($usuario['foto_perfil_dados']);
+                            echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='80' height='80' alt=''>";
+                        } else {
+                            // Caso contrário, exibir a imagem padrão
+                            echo "<img src='imagens/user.png' class='img-fluid rounded-circle' width='80' height='80' alt=''>";
+                        }
         echo '<span class="name p-3">' . $nome . ' - ' . $tipo . '</span>';
         echo '</button>';
         echo '</h2>';
 
         echo '<div id="panelsStayOpen-collapse' . $usuario['id'] . '" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-heading' . $usuario['id'] . '" data-bs-parent="#accordionPanelsStayOpenExample">';
         echo '<div class="accordion-body">';
+        echo '<h3 class="mb-4" id="h3-1">Dados de Contato</h3>';
         echo '<div class="table-responsive">';
         echo '<table class="table table-striped table-bordless mt-3" id="table">';
         echo '<caption>Lista de Dados de Contato</caption>';
@@ -211,7 +247,11 @@
 
         $sql_postagens = "SELECT * FROM postagens WHERE id_usuario = " . $usuario['id'];
         $result_postagens = $conn->conexao->query($sql_postagens);
-
+        if($tipo=="Fornecedor"){
+            echo '<h3 class="mb-4" id="h3-1">Alimentos que posso doar</h3>';
+        }else{
+            echo '<h3 class="mb-4" id="h3-1">Alimentos que quero receber</h3>';
+        }
         echo '<div class="table-responsive">';
         echo '<table class="table table-striped table-bordless mt-3" id="table">';
         echo '<caption>Lista de Alimentos</caption>';

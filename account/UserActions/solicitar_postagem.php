@@ -16,7 +16,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
 } else {
     $usuario = $_SESSION["usuario"];
     // Consulta o ID do usuário no banco de dados
-    require_once "../conexao.php";
+    require_once "../../conexao.php";
     $conn = new Conexao();
     $sql = "SELECT id FROM usuarios WHERE id = ?";
     $stmt = $conn->conexao->prepare($sql);
@@ -104,7 +104,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="ms-auto">
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
-                        <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
+                        <?php
+                            $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
+                            // Não inclui o administrador 
+                            $stmt = $conn->conexao->prepare($sql); 
+                            $stmt->bindParam(1, $usuario->getId());
+                            $stmt->execute();
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        // Verificar se o usuário tem uma foto de perfil no banco
+                                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                } else {
+                                    // Caso contrário, exibir a imagem padrão
+                                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                }
+                        ?>
                     </a>
                 </div>
             </div>
@@ -118,8 +133,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <aside>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
             <div class="offcanvas-header">
+<<<<<<< Updated upstream
                 <img src="../../imagens/user.png" class="rounded-circle" width="50" height="50">
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome()?></h5>
+=======
+                <?php
+                    // Verificar se o usuário tem uma foto de perfil no banco
+                    if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                        $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                        echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    } else {
+                            // Caso contrário, exibir a imagem padrão
+                        echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                    }
+                ?>
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel">
+                    <?php echo $usuario->getNome() ?>
+                </h5>
+>>>>>>> Stashed changes
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
@@ -165,7 +196,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="container mt-5 flex solicitarPostagem-box">
         <div class="container pb-2 text-center">
-            <img src="../imagens/brand.png" width="80" class="img-fluid" alt="">
+            <img src="../../imagens/brand.png" width="80" class="img-fluid" alt="">
             <p class="pt-1 text-center">Solicite sua postagem no sistema SALVAR</p>
         </div>
         <form id="loginForm" action="" method="POST">
@@ -215,7 +246,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="confirmExitButton">Sair</button>
+                        <form action="" method="post">
+                            <button type="submit" class="btn btn-primary" name="logout" id="confirmExitButton">Sair</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -223,8 +256,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
 
-    <script src="../js/logout.js"></script>
-    <script src="../js/solicitar.js"></script>
+    <script src="../../js/logout.js"></script>
+    
+    <script src="../../js/solicitar.js"></script>
 </body>
 
 
