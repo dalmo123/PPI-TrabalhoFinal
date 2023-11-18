@@ -21,6 +21,18 @@ deleteButtons.forEach(button => {
     });
 });
 
+const campo_tipo = document.querySelector("#select");
+const lb_select = document.querySelector("#lb-select");
+
+
+campo_tipo.addEventListener('change', 
+function(event) {
+    if(campo_tipo.value==''){
+        lb_select.style.display = "block";
+    }else{
+        lb_select.style.display = "none";
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function () {
     const searchBar = document.getElementById("search");
@@ -28,22 +40,23 @@ document.addEventListener('DOMContentLoaded', function () {
         filterTable(searchBar.value.toLowerCase());
     });
 
-    function filterTable(searchText) {
-        const table = document.getElementById("table");
-        const table1 = document.getElementById("table1");
-        const rows = table.querySelectorAll('tbody tr');
-        const rows1 = table1.querySelectorAll('tbody tr');
-        
-        rows.forEach(function (row) {
-            const name = row.getElementsByTagName('td')[0].textContent.toLowerCase();
-            if (name.includes(searchText)) {
-                row.style.display = 'table-row';
-            } else {
-                row.style.display = 'none';
-            }
-        });
+    // Obtém a data atual
+    var dataAtual = new Date();
 
-        rows1.forEach(function (row) {
+    // Adiciona dois dias à data atual
+    dataAtual.setDate(dataAtual.getDate() + 2);
+
+    // Formata a data mínima no formato YYYY-MM-DD
+    var minDate = dataAtual.toISOString().split('T')[0];
+
+    // Define a data mínima no campo de data
+    document.getElementById('data_validade').setAttribute('min', minDate);
+
+
+    function filterTable(searchText) {
+        const table = document.querySelectorAll(".table");
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(function (row) {
             const name = row.getElementsByTagName('td')[0].textContent.toLowerCase();
             if (name.includes(searchText)) {
                 row.style.display = 'table-row';

@@ -8,5 +8,19 @@ function(event) {
     }else{
         lb_select.style.display = "none";
     }
-    event.preventDefault();
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Obtém a data atual
+    var dataAtual = new Date();
+
+    // Adiciona dois dias à data atual
+    dataAtual.setDate(dataAtual.getDate() + 2);
+
+    // Formata a data mínima no formato YYYY-MM-DD
+    var minDate = dataAtual.toISOString().split('T')[0];
+
+    // Define a data mínima no campo de data
+    document.getElementById('floatingInput3').setAttribute('min', minDate);
 });
