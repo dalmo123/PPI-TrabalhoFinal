@@ -112,7 +112,7 @@
                         echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
                     } else {
                             // Caso contrário, exibir a imagem padrão
-                        echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                        echo "<img src='../../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
                     }
                 ?>
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
@@ -254,7 +254,7 @@
         <div class="accordion ip-group mb-5" id="accordionPanelsStayOpenExample">
             <?php
             // Consulta ao banco de dados para obter perfis
-            $sql_perfis = "SELECT id, nome, tipo_conta, email, telefone, site FROM usuarios WHERE id!=1";
+            $sql_perfis = "SELECT id, nome, tipo_conta, email, telefone, site, foto_perfil_tipo, foto_perfil_dados, foto_perfil_nome FROM usuarios WHERE id!=1";
             $stmt_perfis = $conn->conexao->prepare($sql_perfis);
             $stmt_perfis->execute();
             $perfis = $stmt_perfis->fetchAll(PDO::FETCH_ASSOC);
