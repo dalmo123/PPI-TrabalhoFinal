@@ -1,6 +1,8 @@
 <?php
+
 require_once "../UsuarioEntidade.php";
 session_start();
+
 
 if (isset($_POST["logout"])) {
     // Destrói a sessão
@@ -32,7 +34,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
 
 //processamento do formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    require_once "../conexao.php";  // Certifique-se de incluir sua lógica de conexão correta aqui
+    require_once "../../conexao.php";
 
     $usuario = $_SESSION["usuario"];
     $idUsuario = $usuario->getId();
