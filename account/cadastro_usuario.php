@@ -1,7 +1,39 @@
 <?php
-include "UsuarioEntidade.php";
-session_start();
-require "../conexao.php";
+    require_once "UsuarioEntidade.php";
+    session_start();
+     require "../conexao.php";
+
+    
+    if(isset($_POST["logout"])) {
+        // Destrói a sessão
+        session_destroy();
+
+        // Redireciona para a página de login
+        header("Location: ../login.php");
+        exit();
+    }
+
+    if(!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
+        header("Location: ../login.php");
+    }
+    else {
+        $usuario = $_SESSION["usuario"];
+        // Consulta o ID do usuário no banco de dados
+        $conn = new Conexao();
+        $sql = "SELECT id, tipo_conta FROM usuarios WHERE email = ? AND nome = ?"; // Supondo que você tenha uma coluna 'tipo_conta' na sua tabela de usuários
+        $stmt = $conn->conexao->prepare($sql);
+        $stmt->bindParam(1, $usuario->getEmail());
+        $stmt->bindParam(2, $usuario->getNome());
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Define o ID do usuário na variável de sessão
+        $usuario->setId($result['id']);
+
+        // Obtém o tipo de conta
+        $tipoConta = $result['tipo_conta'];
+    }
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Dados de conexão com o banco de dados (já definidos no arquivo conexao.php)
@@ -31,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Se não houver upload, usar a foto padrão
             $foto_perfil_nome = "user.png";
             $foto_perfil_tipo = "image/png";
-            $foto_perfil_dados = file_get_contents("imagens/user.png"); // Substitua pelo caminho correto
+            $foto_perfil_dados = file_get_contents("../imagens/user.png");
         }
 
         // Inserir dados do usuário e a foto de perfil no banco de dados
@@ -98,21 +130,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                         aria-controls="offcanvasExample">
                         <?php
-                    $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
-                    // Não inclui o administrador 
-                    $stmt = $conn->conexao->prepare($sql); 
-                    $stmt->bindParam(1, $usuario->getId());
-                    $stmt->execute();
-                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                // Verificar se o usuário tem uma foto de perfil no banco
-                        if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
-                            $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
-                            echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
-                        } else {
-                            // Caso contrário, exibir a imagem padrão
-                            echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
-                        }
-                ?>
+                            $conn = new Conexao();
+                            $sql = "SELECT foto_perfil_nome, foto_perfil_tipo, foto_perfil_dados FROM usuarios WHERE id = ?"; 
+                            // Não inclui o administrador 
+                            $stmt = $conn->conexao->prepare($sql); 
+                            $stmt->bindParam(1, $usuario->getId());
+                            $stmt->execute();
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        // Verificar se o usuário tem uma foto de perfil no banco
+                                if ($user['foto_perfil_nome'] && $user['foto_perfil_tipo'] && $user['foto_perfil_dados']) {
+                                    $foto_perfil_src = "data:" . $user['foto_perfil_tipo'] . ";base64," . base64_encode($user['foto_perfil_dados']);
+                                    echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                } else {
+                                    // Caso contrário, exibir a imagem padrão
+                                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                }
+                        ?>
                     </a>
                 </div>
             </div>
@@ -204,7 +237,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <!-- Box de cadastro e formulario -->
 
-        <form class="form-box" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+        <form class="form-box" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
             <div class="form-floating mb-2">
                 <input type="text" class="form-control" id="name" name="nome" placeholder="Nome" required>
                 <label for="name">Nome</label>
@@ -226,10 +259,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </select>
             </div>
             <div class="mb-3">
-                <label for="profilePicture" class="form-label" name="foto_perfil">Foto de Perfil</label>
-                <input type="file" class="form-control" id="profilePicture" accept="image/*">
+                <label for="foto_perfil" class="form-label">Foto de Perfil</label>
+                <input type="file" class="form-control" id="foto_perfil" name="foto_perfil" accept="image/*">
             </div>
-            <button type="button" class="btn btn-primary mb-2" id="uploadProfilePicture">Trocar Foto de Perfil</button>
             <div class="row  mb-2">
                 <div class="col-md-6">
                     <div class="form-floating">
