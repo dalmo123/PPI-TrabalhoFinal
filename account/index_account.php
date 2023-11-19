@@ -224,7 +224,7 @@
 
     <!-- Segunda sessão: Nossa Motivação e SVG -->
     <div class=" mt-5" id="motiv">
-        <div class="container-fluid">
+        <div class="container">
             <div class="row">
                 <!-- Texto: Nossa Motivação (lado esquerdo) -->
                 <div class="col-lg-7">
