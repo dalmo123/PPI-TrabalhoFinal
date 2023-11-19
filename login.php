@@ -31,19 +31,20 @@ if (isset($_POST["usuario"]) && isset($_POST["senha"])) {
                 $usuarioEntidade->setEmail($usuario->email);
 
                 $_SESSION["login"] = "1";
+                $_SESSION["erro"] = "Sucesso";
                 $_SESSION["usuario"] = $usuarioEntidade; // Armazene a instância da classe no array de sessão
                 header("Location: account/index_account.php"); // Redireciona para a página de home, ajuste o nome conforme necessário
                 exit(); // Encerra o script
             } else {
                 $_SESSION["erro"] = "Senha inválida";
                 echo "Senha inválida";
-                //header("Location: login.php"); // Redireciona de volta para a página de login
+                header("Location: login.php"); // Redireciona de volta para a página de login
                 exit(); // Encerra o script
             }
         } else {
             $_SESSION["erro"] = "Usuário não encontrado";
             echo "Usuário não encontrado";
-            //header("Location: login.php"); // Redireciona de volta para a página de login
+            header("Location: login.php"); // Redireciona de volta para a página de login
             exit(); // Encerra o script
         }
     } else {
@@ -72,7 +73,7 @@ if (isset($_POST["usuario"]) && isset($_POST["senha"])) {
 <header>
     <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.php"><img src="imagens/Logo_transp.png" class="img-fluid" width="200" title="Logo Sistema Salvar" alt=""></a>
+            <a class="navbar-brand" href="index.html"><img src="imagens/Logo_transp.png" class="img-fluid" width="200" title="Logo Sistema Salvar" alt=""></a>
 
             <!-- Links à esquerda -->
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -126,6 +127,14 @@ if (isset($_POST["usuario"]) && isset($_POST["senha"])) {
         <!-- Box de login -->
 
         <div class="container pb-2 text-center">
+            <?php
+                if($_SESSION["erro"] != "Sucesso"){
+                    echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+                    echo '<strong>Não foi possível logar! </strong>'. $_SESSION["erro"] . '.';
+                    echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                    echo '</div>';
+                }
+            ?>
             <img src="imagens/brand.png" width="80" class="img-fluid" alt="" title="Logo Sistema Salvar">
             <p class="pt-1 text-center">Faça login na sua conta do sistema SALVAR</p>
         </div>
