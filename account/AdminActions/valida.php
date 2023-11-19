@@ -340,7 +340,7 @@
             </div>
         </div>
     </div>
-   <script src="../../js/CRUD_Adm_Post.js"></script>
+   <script src="../../js/valida.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Adicionar evento de clique aos botões de rejeição
