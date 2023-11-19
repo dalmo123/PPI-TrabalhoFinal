@@ -378,7 +378,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
         </div>
     </div>
     </div>
-    <script src="../../js/CRUD_user.js"></script>
+    <script src="../../js/post_user.js"></script>
     <script src="../../js/logout.js"></script>
     <script>
         const campo_tipo = document.querySelector("#unidade_medida");
