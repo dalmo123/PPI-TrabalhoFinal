@@ -90,7 +90,7 @@
                                     echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
                                 } else {
                                     // Caso contrário, exibir a imagem padrão
-                                    echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                                    echo "<img src='../../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
                                 }
                         ?>
                     </a>
