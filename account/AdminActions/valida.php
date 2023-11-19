@@ -119,7 +119,7 @@
                         echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
                     } else {
                             // Caso contrário, exibir a imagem padrão
-                        echo "<img src='../../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
+                        echo "<img src='../imagens/user.png' class='img-fluid rounded-circle' width='50' height='50' alt=''>";
                     }
                 ?>
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel"><?php echo $usuario->getNome();?></h5>
@@ -200,7 +200,7 @@
          <div class="accordion ip-group mb-5" id="accordionPanelsStayOpenExample">
             <?php
             // Consulta ao banco de dados para obter perfis
-            $sql_perfis = "SELECT id, nome, tipo_conta FROM usuarios WHERE id!=1";
+            $sql_perfis = "SELECT id, nome, tipo_conta, foto_perfil_tipo, foto_perfil_dados, foto_perfil_nome FROM usuarios WHERE id!=1";
             $stmt_perfis = $conn->conexao->prepare($sql_perfis);
             $stmt_perfis->execute();
             $perfis = $stmt_perfis->fetchAll(PDO::FETCH_ASSOC);
@@ -220,7 +220,13 @@
                     echo '<div class="accordion-item">';
                     echo '<h2 class="accordion-header">';
                     echo '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#perfil_' . $id_perfil . '" aria-expanded="true" aria-controls="perfil_' . $id_perfil . '">';
-                    echo '<img src="../../imagens/user.png" class="img-fluid rounded-circle" width="80" alt="">';
+                     if ($perfil['foto_perfil_nome'] && $perfil['foto_perfil_tipo'] && $perfil['foto_perfil_dados']) {
+                            $foto_perfil_src = "data:" . $perfil['foto_perfil_tipo'] . ";base64," . base64_encode($perfil['foto_perfil_dados']);
+                            echo "<img src='{$foto_perfil_src}' class='img-fluid rounded-circle' width='80' height='80' alt=''>";
+                        } else {
+                            // Caso contrário, exibir a imagem padrão
+                            echo "<img src='../../imagens/user.png' class='img-fluid rounded-circle' width='80' height='80' alt=''>";
+                        }
                     echo '<span class="name p-3">' . $nome_perfil . ' - ' . $tipo_conta_perfil . '</span>';
                     echo '</button>';
                     echo '</h2>';
