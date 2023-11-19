@@ -149,7 +149,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="profilePicture" class="form-label">Foto de Perfil</label>
                 <input type="file" class="form-control" id="profilePicture" name="foto_perfil" accept="image/*">
             </div>
-            <button type="button" class="btn btn-primary mb-2" id="uploadProfilePicture">Trocar Foto de Perfil</button>
             <div class="row  mb-2">
                 <div class="col-md-6">
                     <div class="form-floating">
