@@ -233,7 +233,6 @@
                     echo '<div id="perfil_' . $id_perfil . '" class="accordion-collapse collapse show">';
                     echo '<div id="perfil-container-' . $id_perfil . '" class="accordion-body">';
                     echo '<div class="accordion-body">';
-                                // Seu código PHP existente ...
 
                                 echo '<h3 class="mb-4">Postagens em Espera</h3>';
                                 echo '<div class="table-responsive">';
