@@ -137,7 +137,7 @@
                     <div class="card-body mb-5">
                         <h5 class="card-title">Cadastro</h5>
                         <p class="card-text">Cadastre-se no sistema SALVAR.</p>
-                        <a href="cadastro_usuario.html" class="btn btn-primary">Cadastrar</a>
+                        <a href="cadastro_usuario.php" class="btn btn-primary">Cadastrar</a>
                     </div>
                 </div>
             </div>
@@ -148,7 +148,7 @@
                     <div class="card-body mb-5">
                         <h5 class="card-title">Listagem</h5>
                         <p class="card-text">Veja quem já colabora no sistema SALVAR.</p>
-                        <a href="lista_itens.html" class="btn btn-primary">Ver Lista</a>
+                        <a href="lista_itens.php" class="btn btn-primary">Ver Lista</a>
                     </div>
                 </div>
             </div>
