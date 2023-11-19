@@ -245,7 +245,7 @@
         echo '</table>';
         echo '</div>';
 
-        $sql_postagens = "SELECT * FROM postagens WHERE status = 'aprovada' AND id_usuario = " . $usuario['id'];
+        $sql_postagens = "SELECT * FROM postagens WHERE id_usuario = " . $usuario['id'] . " AND status='aprovada'";
         $result_postagens = $conn->conexao->query($sql_postagens);
         if($tipo=="Fornecedor"){
             echo '<h3 class="mb-4" id="h3-1">Alimentos que posso doar</h3>';
