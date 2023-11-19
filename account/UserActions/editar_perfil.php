@@ -18,7 +18,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     // Consulta o ID e tipo_conta do usuário no banco de dados
     require_once "../../conexao.php";
     $conn = new Conexao();
-    $sql = "SELECT id, tipo_conta, nome, email, telefone FROM usuarios WHERE id = ?";
+    $sql = "SELECT id, tipo_conta, nome, email, telefone, site FROM usuarios WHERE id = ?";
     $stmt = $conn->conexao->prepare($sql);
     $stmt->bindParam(1, $usuario->getId());
     $stmt->execute();
@@ -30,6 +30,7 @@ if (!isset($_SESSION["login"]) || $_SESSION["login"] != "1") {
     $nomeUsuario = $result['nome'];
     $emailUsuario = $result['email'];
     $telefoneUsuario = $result['telefone'];
+    $siteUsuario = $result['site'];
 }
 
 // Processamento do formulário quando enviado
@@ -37,7 +38,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recupera os dados do formulário
     $nome = !empty($_POST["name"]) ? $_POST["name"] : null;
     $email = !empty($_POST["email"]) ? $_POST["email"] : null;
-    $telefone = !empty($_POST["tel"]) ? $_POST["tel"] : null;
+
+    if($tipoConta == "ONG"){
+        $telefone = !empty($_POST["tel"]) ? $_POST["tel"] : null;
+        $site = !empty($_POST["site"]) ? $_POST["site"] : null;
+    }
 
     // Atualiza a foto de perfil, se fornecida
     if (isset($_FILES["profilePicture"]) && $_FILES["profilePicture"]["error"] == 0) {
@@ -51,17 +56,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $foto_perfil_dados = null;
     }
 
+    if($tipoConta == "ONG"){
+            $sql = "UPDATE usuarios SET nome = COALESCE(?, nome), email = COALESCE(?, email), telefone = COALESCE(?, telefone), site = COALESCE(?, site), foto_perfil_nome = COALESCE(?, foto_perfil_nome), foto_perfil_tipo = COALESCE(?, foto_perfil_tipo), foto_perfil_dados = COALESCE(?, foto_perfil_dados) WHERE id = ?";
+        $stmt = $conn->conexao->prepare($sql);
+        $stmt->bindParam(1, $nome);
+        $stmt->bindParam(2, $email);
+        $stmt->bindParam(3, $telefone);
+        $stmt->bindParam(4, $site);
+        $stmt->bindParam(5, $foto_perfil_nome);
+        $stmt->bindParam(6, $foto_perfil_tipo);
+        $stmt->bindParam(7, $foto_perfil_dados);
+        $stmt->bindParam(8, $usuario->getId());
+        $stmt->execute();
+    }else{
     // Atualiza os dados no banco apenas se não estiverem em branco
-    $sql = "UPDATE usuarios SET nome = COALESCE(?, nome), email = COALESCE(?, email), telefone = COALESCE(?, telefone), foto_perfil_nome = COALESCE(?, foto_perfil_nome), foto_perfil_tipo = COALESCE(?, foto_perfil_tipo), foto_perfil_dados = COALESCE(?, foto_perfil_dados) WHERE id = ?";
-    $stmt = $conn->conexao->prepare($sql);
-    $stmt->bindParam(1, $nome);
-    $stmt->bindParam(2, $email);
-    $stmt->bindParam(3, $telefone);
-    $stmt->bindParam(4, $foto_perfil_nome);
-    $stmt->bindParam(5, $foto_perfil_tipo);
-    $stmt->bindParam(6, $foto_perfil_dados);
-    $stmt->bindParam(7, $usuario->getId());
-    $stmt->execute();
+        $sql = "UPDATE usuarios SET nome = COALESCE(?, nome), email = COALESCE(?, email), foto_perfil_nome = COALESCE(?, foto_perfil_nome), foto_perfil_tipo = COALESCE(?, foto_perfil_tipo), foto_perfil_dados = COALESCE(?, foto_perfil_dados) WHERE id = ?";
+        $stmt = $conn->conexao->prepare($sql);
+        $stmt->bindParam(1, $nome);
+        $stmt->bindParam(2, $email);
+        $stmt->bindParam(3, $foto_perfil_nome);
+        $stmt->bindParam(4, $foto_perfil_tipo);
+        $stmt->bindParam(5, $foto_perfil_dados);
+        $stmt->bindParam(6, $usuario->getId());
+        $stmt->execute();
+    }
 }
 ?>
 
@@ -220,14 +238,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="email" class="form-control" id="email" placeholder="Email" name="email" value="<?php echo isset($emailUsuario) ? $emailUsuario : ''; ?>" autocomplete="on">
                 <label for="email">Email</label>
             </div>
-    <div class="form-floating mb-2">
-        <input type="text" class="form-control" id="tel" placeholder="Telefone" name="tel" value="<?php echo isset($telefoneUsuario) ? $telefoneUsuario : ''; ?>" autocomplete="on">
-        <label for="tel">Telefone</label>
-    </div>
+    <?php
+        if ($tipoConta == 'ONG'){
+            echo '<div class="form-floating mb-2">';
+        echo '<input type="text" class="form-control" id="tel" placeholder="Telefone" name="tel" value="'. (isset($telefoneUsuario) ? $telefoneUsuario : '') .'" autocomplete="on">';
+        echo '<label for="tel">Telefone</label>';
+    echo '</div>';
+            echo '<div class="form-floating mb-2">';
+            echo '<input type="text" class="form-control" id="site" placeholder="Site" name="site" value="' . (isset($siteUsuario) ? $siteUsuario : '') . '" autocomplete="on">';
+            echo '<label for="site">Site</label>';
+            echo '</div>';
+        }
+    ?>
+
             <div class="mb-3">
                 <label for="profilePicture" class="form-label">Foto de Perfil</label>
                 <input type="file" class="form-control" id="profilePicture" accept="image/*">
-            </div>    
+            </div>     
         
             <button type="submit" class="btn btn-primary mt-3 total-btn">Salvar Alterações</button>
         </form>
